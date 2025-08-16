@@ -325,7 +325,7 @@ function aggiungiNuovaCategoria(tipo) {
   editingKey = null;
   
   document.getElementById('modalTitle').textContent = 
-    tipo === 'prestazioni' ? 'Aggiungi Nuova Prestazione' : 'Aggiungi Nuovo Medicinale';
+    tipo === 'prestazioni' ? 'Aggiungi ora' : 'Aggiungi ora';
   
   // Reset form
   document.getElementById('modalParola').value = '';
