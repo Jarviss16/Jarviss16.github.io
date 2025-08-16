@@ -10,29 +10,26 @@
   <header>
     <h1>Dizionario Sanitario</h1>
     <nav>
-      <button onclick="showPage('search')">🔍 Ricerca</button>
-      <button onclick="showPage('list')">📋 Lista</button>
+      <button class="tab-btn active" data-tab="ricerca">Ricerca</button>
+      <button class="tab-btn" data-tab="lista">Lista parole</button>
     </nav>
   </header>
 
-  <!-- PAGINA RICERCA -->
-  <section id="search" class="page">
-    <h2>Ricerca prestazione</h2>
-    <input type="text" id="searchInput" placeholder="Scrivi una parola..." oninput="searchWord()">
-    <div id="searchResult"></div>
-  </section>
+  <main>
+    <!-- Sezione Ricerca -->
+    <section id="ricerca" class="tab-content active">
+      <h2>Ricerca prestazione</h2>
+      <input type="text" id="searchInput" placeholder="Inserisci una parola...">
+      <button onclick="cerca()">Cerca</button>
+      <div id="risultato"></div>
+    </section>
 
-  <!-- PAGINA LISTA -->
-  <section id="list" class="page hidden">
-    <h2>Lista parole sanitarie</h2>
-    <form onsubmit="addWord(event)">
-      <input type="text" id="newWord" placeholder="Parola" required>
-      <input type="text" id="newCategory" placeholder="Categoria" required>
-      <input type="number" id="newPercent" placeholder="%" required>
-      <button type="submit">➕ Aggiungi</button>
-    </form>
-    <ul id="wordList"></ul>
-  </section>
+    <!-- Sezione Lista parole -->
+    <section id="lista" class="tab-content">
+      <h2>Lista parole sanitarie</h2>
+      <ul id="listaParole"></ul>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>
