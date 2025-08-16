@@ -4,32 +4,165 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dizionario Sanitario</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Dizionario Sanitario</h1>
-    <nav>
-      <button class="tab-btn active" data-tab="ricerca">Ricerca</button>
-      <button class="tab-btn" data-tab="lista">Lista parole</button>
-    </nav>
+    <div class="container">
+      <h1>Dizionario Sanitario</h1>
+      <nav>
+        <button class="tab-btn active" data-tab="ricerca">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          Ricerca
+        </button>
+        <button class="tab-btn" data-tab="lista">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 6h13"></path>
+            <path d="M8 12h13"></path>
+            <path d="M8 18h13"></path>
+            <path d="M3 6h.01"></path>
+            <path d="M3 12h.01"></path>
+            <path d="M3 18h.01"></path>
+          </svg>
+          Lista Prestazioni
+        </button>
+        <button class="tab-btn" data-tab="medicinali">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4.5 16.5c-1.5 1.5-1.5 3.5 0 5s3.5 1.5 5 0l4-4a3 3 0 0 0-3-3l-4 4"></path>
+            <path d="M15 7l3 3"></path>
+            <path d="M22 2l-3 3"></path>
+            <path d="M2 22l3-3"></path>
+          </svg>
+          Medicinali
+        </button>
+      </nav>
+    </div>
   </header>
 
-  <main>
+  <main class="container">
     <!-- Sezione Ricerca -->
     <section id="ricerca" class="tab-content active">
-      <h2>Ricerca prestazione</h2>
-      <input type="text" id="searchInput" placeholder="Inserisci una parola...">
-      <button onclick="cerca()">Cerca</button>
-      <div id="risultato"></div>
+      <div class="search-section">
+        <h2>Ricerca Prestazione o Medicinale</h2>
+        <div class="search-container">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Inserisci una parola chiave...">
+          </div>
+          <button class="search-btn" onclick="cerca()">Cerca</button>
+        </div>
+        <div id="risultato" class="result-container"></div>
+      </div>
     </section>
 
-    <!-- Sezione Lista parole -->
+    <!-- Sezione Lista Prestazioni -->
     <section id="lista" class="tab-content">
-      <h2>Lista parole sanitarie</h2>
-      <ul id="listaParole"></ul>
+      <div class="list-section">
+        <div class="section-header">
+          <h2>Lista Prestazioni Sanitarie</h2>
+          <button class="add-btn" onclick="aggiungiNuovaCategoria('prestazioni')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14"></path>
+              <path d="M5 12h14"></path>
+            </svg>
+            Nuova Categoria
+          </button>
+        </div>
+        <div class="table-container">
+          <table id="tabellaLista">
+            <thead>
+              <tr>
+                <th>Parola Chiave</th>
+                <th>Sinonimi</th>
+                <th>Categoria</th>
+                <th>Rimborso</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="corpoTabella">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sezione Medicinali -->
+    <section id="medicinali" class="tab-content">
+      <div class="list-section">
+        <div class="section-header">
+          <h2>Lista Medicinali</h2>
+          <button class="add-btn" onclick="aggiungiNuovaCategoria('medicinali')">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14"></path>
+              <path d="M5 12h14"></path>
+            </svg>
+            Nuovo Medicinale
+          </button>
+        </div>
+        <div class="table-container">
+          <table id="tabellaMedicinali">
+            <thead>
+              <tr>
+                <th>Parola Chiave</th>
+                <th>Sinonimi</th>
+                <th>Categoria</th>
+                <th>Rimborso</th>
+                <th>Azioni</th>
+              </tr>
+            </thead>
+            <tbody id="corpoTabellaMedicinali">
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
   </main>
+
+  <!-- Modal per aggiungere/modificare voci -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Aggiungi Nuova Voce</h3>
+        <button class="close-btn" onclick="chiudiModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18"></path>
+            <path d="M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form id="modalForm">
+        <div class="form-group">
+          <label for="modalParola">Parola Chiave:</label>
+          <input type="text" id="modalParola" required>
+        </div>
+        <div class="form-group">
+          <label for="modalSinonimi">Sinonimi (separati da virgola):</label>
+          <input type="text" id="modalSinonimi" placeholder="es: controllo, check-up, verifica">
+        </div>
+        <div class="form-group">
+          <label for="modalCategoria">Categoria:</label>
+          <input type="text" id="modalCategoria" required>
+        </div>
+        <div class="form-group">
+          <label for="modalRimborso">Percentuale Rimborso:</label>
+          <input type="number" id="modalRimborso" min="0" max="100" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" onclick="chiudiModal()">Annulla</button>
+          <button type="submit" class="save-btn">Salva</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
