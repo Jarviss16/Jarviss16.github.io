@@ -1,120 +1,42 @@
-/* Reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Arial", sans-serif;
-}
-
-/* Colori principali */
-:root {
-  --primary: #ff6600; /* arancione */
-  --dark: #000000;
-  --light: #ffffff;
-}
-
-/* Layout base */
 body {
-  background: var(--light);
-  color: var(--dark);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #fff;
+  color: #111;
 }
 
 header {
-  width: 100%;
-  max-width: 800px;
   text-align: center;
-  margin-bottom: 20px;
-}
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 10px;
+  padding: 1rem;
+  background: #111;
+  color: #fff;
 }
 
 nav {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+  margin-top: 1rem;
 }
 
-nav button {
-  padding: 10px 15px;
+.tab-btn {
+  padding: 0.5rem 1rem;
+  margin: 0.3rem;
   border: none;
-  border-radius: 10px;
   cursor: pointer;
-  background: var(--primary);
-  color: var(--light);
+  border-radius: 5px;
+  background: #eee;
+  color: #111;
   font-weight: bold;
-  transition: 0.2s;
 }
 
-nav button:hover {
-  opacity: 0.8;
+.tab-btn.active {
+  background: orange;
+  color: #fff;
 }
 
-/* Sezioni */
-.page {
-  width: 100%;
-  max-width: 800px;
-}
-
-.hidden {
+.tab-content {
   display: none;
+  padding: 1rem;
 }
 
-h2 {
-  margin-bottom: 15px;
-  border-left: 5px solid var(--primary);
-  padding-left: 10px;
-}
-
-input, button {
-  padding: 10px;
-  border: 1px solid var(--dark);
-  border-radius: 8px;
-  margin: 5px 0;
-}
-
-input:focus {
-  outline: 2px solid var(--primary);
-}
-
-form {
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  margin-bottom: 15px;
-}
-
-#searchResult {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 8px;
-  background: #f7f7f7;
-  border-left: 5px solid var(--primary);
-  font-weight: bold;
-}
-
-ul {
-  list-style: none;
-}
-
-li {
-  background: #f7f7f7;
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-li span {
-  font-weight: bold;
-  color: var(--primary);
+.tab-content.active {
+  display: block;
 }
