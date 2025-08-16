@@ -15,7 +15,7 @@ const defaultPrestazioni = {
     categoria: "Esame diagnostico",
     rimborso: 60
   },
-    "prova prova": {
+  "prova prova": {
     sinonimi: ["puzza puzza"],
     categoria: "Esame diagnostico",
     rimborso: 56
