@@ -17,13 +17,8 @@ const defaultPrestazioni = {
   },
     "prova prova": {
     sinonimi: ["puzza puzza"],
-    categoria: "Esame puzzolente",
-    rimborso: 56
-  },
-  "radiografia": {
-    sinonimi: ["rx", "raggi x", "lastra"],
     categoria: "Esame diagnostico",
-    rimborso: 60
+    rimborso: 56
   },
   "ecografia": {
     sinonimi: ["eco", "ultrasuoni", "ecotomografia"],
