@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dizionario Sanitario</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Dizionario Sanitario</h1>
+    <nav>
+      <button onclick="showPage('search')">🔍 Ricerca</button>
+      <button onclick="showPage('list')">📋 Lista</button>
+    </nav>
+  </header>
+
+  <!-- PAGINA RICERCA -->
+  <section id="search" class="page">
+    <h2>Ricerca prestazione</h2>
+    <input type="text" id="searchInput" placeholder="Scrivi una parola..." oninput="searchWord()">
+    <div id="searchResult"></div>
+  </section>
+
+  <!-- PAGINA LISTA -->
+  <section id="list" class="page hidden">
+    <h2>Lista parole sanitarie</h2>
+    <form onsubmit="addWord(event)">
+      <input type="text" id="newWord" placeholder="Parola" required>
+      <input type="text" id="newCategory" placeholder="Categoria" required>
+      <input type="number" id="newPercent" placeholder="%" required>
+      <button type="submit">➕ Aggiungi</button>
+    </form>
+    <ul id="wordList"></ul>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
