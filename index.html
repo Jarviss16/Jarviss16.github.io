@@ -4,68 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dizionario Sanitario</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="container">
-      <h1>Dizionario Sanitario</h1>
-      <nav>
-        <button class="tab-btn active" data-tab="ricerca">🔍 Ricerca</button>
-        <button class="tab-btn" data-tab="lista">📋 Lista Prestazioni</button>
-        <button class="tab-btn" data-tab="medicinali">💊 Medicinali</button>
-      </nav>
-    </div>
+    <h1>Dizionario Sanitario</h1>
+    <nav>
+      <button class="tab-btn active" data-tab="ricerca">🔍 Ricerca</button>
+      <button class="tab-btn" data-tab="prestazioni">📋 Lista Prestazioni</button>
+      <button class="tab-btn" data-tab="medicinali">💊 Lista Medicinali</button>
+    </nav>
   </header>
 
-  <main class="container">
-    <!-- Ricerca -->
+  <main>
+    <!-- Scheda Ricerca -->
     <section id="ricerca" class="tab-content active">
       <h2>Ricerca Prestazione o Medicinale</h2>
-      <div class="search-container">
+      <div class="search-box">
         <input type="text" id="searchInput" placeholder="Inserisci una parola chiave...">
-        <button class="search-btn" onclick="cerca()">Cerca</button>
+        <button id="searchBtn">Cerca</button>
       </div>
-      <div id="risultato" class="result-container"></div>
+      <div id="result"></div>
     </section>
 
-    <!-- Prestazioni -->
-    <section id="lista" class="tab-content">
-      <h2>Lista Prestazioni Sanitarie</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Parola Chiave</th>
-              <th>Sinonimi</th>
-              <th>Categoria</th>
-              <th>Rimborso</th>
-            </tr>
-          </thead>
-          <tbody id="corpoTabella"></tbody>
-        </table>
-      </div>
+    <!-- Scheda Prestazioni -->
+    <section id="prestazioni" class="tab-content">
+      <h2>Lista Prestazioni</h2>
+      <ul id="prestazioniList"></ul>
     </section>
 
-    <!-- Medicinali -->
+    <!-- Scheda Medicinali -->
     <section id="medicinali" class="tab-content">
       <h2>Lista Medicinali</h2>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Sinonimi</th>
-              <th>Categoria</th>
-              <th>Rimborso</th>
-            </tr>
-          </thead>
-          <tbody id="corpoTabellaMedicinali"></tbody>
-        </table>
-      </div>
+      <ul id="medicinaliList"></ul>
     </section>
   </main>
 
