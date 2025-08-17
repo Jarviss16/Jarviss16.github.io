@@ -4,7 +4,174 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dizionario Sanitario</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fa;
+      color: #222;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 20px;
+      background: linear-gradient(to right, #ff9966, #ff5e62);
+      color: white;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    nav button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    nav button.active {
+      background: #ff5e62;
+      color: white;
+      font-weight: bold;
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .tab-content {
+      display: none;
+      margin-top: 40px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .search-box {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .search-box input {
+      width: 60%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      padding: 12px 25px;
+      background: #ff5e62;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .search-box button:hover {
+      background: #ff3b47;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      min-height: 60px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    /* Cards stile box */
+    .card-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .card {
+      background: #fff;
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      color: #ff5e62;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .add-btn-box {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .add-btn {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #ff9966;
+      color: white;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .add-btn:hover {
+      background: #ff5e62;
+    }
+    
+    /* Stili per la ricerca fuzzy */
+    .no-results {
+      text-align: center;
+      color: #ff5e62;
+      padding: 20px;
+      font-weight: bold;
+    }
+    
+    .search-type {
+      font-size: 0.9em;
+      color: #888;
+      margin-left: 8px;
+    }
+    
+    .match-highlight {
+      background-color: #fff9c4;
+      padding: 0 2px;
+      border-radius: 3px;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -21,7 +188,7 @@
     <section id="ricerca" class="tab-content active">
       <h2>Ricerca Prestazione o Medicinale</h2>
       <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Inserisci una parola chiave...">
+        <input type="text" id="searchInput" placeholder="Inserisci una parola chiave..." autocomplete="off">
         <button id="searchBtn">Cerca</button>
       </div>
       <div id="result"></div>
@@ -46,7 +213,213 @@
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    // Prestazioni con sinonimi / descrizioni
+    const prestazioni = [
+      {
+        nome: "Visita cardiologica",
+        descrizione: "Controllo medico specializzato sul cuore",
+        sinonimi: ["cardiologia", "check-up cuore"],
+        rimborso: "70%"
+      },
+      {
+        nome: "Radiografia",
+        descrizione: "Esame diagnostico con raggi X",
+        sinonimi: ["lastra", "rx"],
+        rimborso: "50%"
+      },
+      {
+        nome: "Analisi del sangue",
+        descrizione: "Prelievo e analisi di laboratorio",
+        sinonimi: ["esami sangue", "emocromo"],
+        rimborso: "60%"
+      },
+      {
+        nome: "Ecografia addominale",
+        descrizione: "Esame diagnostico non invasivo degli organi addominali",
+        sinonimi: ["eco addome", "ultrasuoni addome"],
+        rimborso: "55%"
+      },
+      {
+        nome: "Visita dermatologica",
+        descrizione: "Controllo specialistico per problemi della pelle",
+        sinonimi: ["controllo pelle", "esame dermatologico"],
+        rimborso: "65%"
+      }
+    ];
+
+    // Medicinali con sinonimi / descrizioni
+    const medicinali = [
+      {
+        nome: "Tachipirina",
+        descrizione: "Farmaco antipiretico e antidolorifico",
+        sinonimi: ["paracetamolo"],
+        rimborso: "40%"
+      },
+      {
+        nome: "Ibuprofene",
+        descrizione: "Farmaco antinfiammatorio non steroideo",
+        sinonimi: ["brufen"],
+        rimborso: "30%"
+      },
+      {
+        nome: "Amoxicillina",
+        descrizione: "Farmaco antibiotico per infezioni batteriche",
+        sinonimi: ["antibiotico", "Zimox"],
+        rimborso: "20%"
+      },
+      {
+        nome: "Aspirina",
+        descrizione: "Farmaco antinfiammatorio e antipiretico",
+        sinonimi: ["acido acetilsalicilico"],
+        rimborso: "25%"
+      },
+      {
+        nome: "Augmentin",
+        descrizione: "Antibiotico ad ampio spettro",
+        sinonimi: ["amoxicillina e acido clavulanico"],
+        rimborso: "35%"
+      }
+    ];
+
+    // Funzione per la ricerca fuzzy
+    function fuzzySearch(query, text) {
+      query = query.toLowerCase();
+      text = text.toLowerCase();
+      
+      if (!query) return false;
+      
+      // Controllo per corrispondenza esatta
+      if (text.includes(query)) return true;
+      
+      // Controllo per corrispondenza fuzzy
+      let index = 0;
+      for (const char of text) {
+        if (char === query[index]) {
+          index++;
+          if (index === query.length) return true;
+        }
+      }
+      return false;
+    }
+
+    // Funzione per evidenziare le corrispondenze nel testo
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      
+      const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+      return text.replace(regex, '<span class="match-highlight">$1</span>');
+    }
+
+    // Funzione per evitare problemi con caratteri speciali nelle regex
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Funzione ricerca migliorata con fuzzy search
+    function performSearch() {
+      const query = document.getElementById("searchInput").value.trim();
+      const resultDiv = document.getElementById("result");
+      
+      if (!query) {
+        resultDiv.innerHTML = '<div class="no-results">Inserisci un termine di ricerca</div>';
+        return;
+      }
+      
+      const allItems = [
+        ...prestazioni.map(item => ({ ...item, type: 'prestazione' })),
+        ...medicinali.map(item => ({ ...item, type: 'medicinale' }))
+      ];
+      
+      const results = allItems.filter(item => {
+        // Controlla nel nome
+        if (fuzzySearch(query, item.nome)) return true;
+        
+        // Controlla nella descrizione
+        if (fuzzySearch(query, item.descrizione)) return true;
+        
+        // Controlla nei sinonimi
+        return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
+      });
+      
+      if (results.length === 0) {
+        resultDiv.innerHTML = '<div class="no-results">❌ Nessun risultato trovato per "' + query + '"</div>';
+        return;
+      }
+      
+      let html = '';
+      results.forEach(item => {
+        const highlightedNome = highlightMatch(item.nome, query);
+        const highlightedDesc = highlightMatch(item.descrizione, query);
+        const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
+        
+        html += `
+          <div class="card">
+            <h3>${highlightedNome} <span class="search-type">(${item.type === 'prestazione' ? 'Prestazione' : 'Medicinale'})</span></h3>
+            <p><strong>Descrizione:</strong> ${highlightedDesc}</p>
+            <p><strong>Sinonimi:</strong> ${highlightedSyn}</p>
+            <p><strong>Rimborso:</strong> ${item.rimborso}</p>
+          </div>
+        `;
+      });
+      
+      resultDiv.innerHTML = html;
+    }
+
+    // Riempio lista prestazioni
+    const prestazioniList = document.getElementById("prestazioniList");
+    prestazioni.forEach(p => {
+      let div = document.createElement("div");
+      div.classList.add("card");
+      div.innerHTML = `
+        <h3>${p.nome}</h3>
+        <p><strong>Descrizione:</strong> ${p.descrizione}</p>
+        <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
+        <p><strong>Rimborso:</strong> ${p.rimborso}</p>
+      `;
+      prestazioniList.appendChild(div);
+    });
+
+    // Riempio lista medicinali
+    const medicinaliList = document.getElementById("medicinaliList");
+    medicinali.forEach(m => {
+      let div = document.createElement("div");
+      div.classList.add("card");
+      div.innerHTML = `
+        <h3>${m.nome}</h3>
+        <p><strong>Descrizione:</strong> ${m.descrizione}</p>
+        <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
+        <p><strong>Rimborso:</strong> ${m.rimborso}</p>
+      `;
+      medicinaliList.appendChild(div);
+    });
+
+    // Navigazione tra schede
+    const tabs = document.querySelectorAll(".tab-btn");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabs.forEach(b => b.classList.remove("active"));
+        contents.forEach(c => c.classList.remove("active"));
+
+        btn.classList.add("active");
+        document.getElementById(btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // Event listeners per la ricerca
+    document.getElementById("searchBtn").addEventListener("click", performSearch);
+    
+    // Ricerca con il tasto Invio
+    document.getElementById("searchInput").addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        performSearch();
+      }
+    });
+    
+    // Messaggio iniziale
+    document.getElementById("result").innerHTML = '<div class="no-results">Inserisci un termine e premi Cerca o Invio</div>';
+  </script>
 </body>
 </html>
-v
