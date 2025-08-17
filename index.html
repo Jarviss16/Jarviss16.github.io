@@ -3,9 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dizionario Sanitario con Dark Mode</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Dizionario Sanitario con Dark Mode Migliorata</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      /* Light mode colors */
+      --primary: #ff6b35;
+      --primary-dark: #e55a00;
+      --primary-light: #ff9e56;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --text-light: #666666;
+      --border-color: #e0e0e0;
+      --header-bg: linear-gradient(135deg, #ff6b35, #e55a00);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      
+      /* Dark mode colors - Palette migliorata */
+      --dark-bg-color: #121826; /* Blu-grigio scuro */
+      --dark-card-bg: #1e293b; /* Blu-grigio medio */
+      --dark-text-color: #e2e8f0; /* Grigio chiaro per testo */
+      --dark-text-light: #94a3b8; /* Grigio-blu per testo secondario */
+      --dark-border-color: #334155; /* Grigio-blu per bordi */
+      --dark-header-bg: linear-gradient(135deg, #0f172a, #1e293b); /* Gradiente blu scuro */
+      --dark-accent: #38bdf8; /* Azzurro brillante per accenti */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    body.dark-mode {
+      background-color: var(--dark-bg-color);
+      color: var(--dark-text-color);
+    }
+
+    header {
+      text-align: center;
+      padding: 25px 20px;
+      background: var(--header-bg);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    body.dark-mode header {
+      background: var(--dark-header-bg);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    h1 {
+      margin-bottom: 15px;
+      font-size: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    nav button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    nav button:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    nav button.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    body.dark-mode nav button.active {
+      background: #334155;
+      color: var(--dark-accent);
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-size: 1.8rem;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    body.dark-mode h2 {
+      color: var(--dark-accent);
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    body.dark-mode h2::after {
+      background: var(--dark-accent);
+    }
+
+    .search-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    body.dark-mode .search-container {
+      background: var(--dark-card-bg);
+      border: 1px solid var(--dark-border-color);
+    }
+
+    .search-box {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 15px 20px;
+      border-radius: 50px;
+      border: 2px solid var(--border-color);
+      font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    body.dark-mode .search-box input {
+      background-color: var(--dark-card-bg);
+      color: var(--dark-text-color);
+      border-color: var(--dark-border-color);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+    }
+
+    body.dark-mode .search-box input:focus {
+      border-color: var(--dark-accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+    }
+
+    .search-box button {
+      padding: 15px 30px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+    }
+
+    body.dark-mode .search-box button {
+      background: var(--dark-accent);
+    }
+
+    body.dark-mode .search-box button:hover {
+      background: #0ea5e9;
+    }
+
+    #result {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      min-height: 200px;
+    }
+
+    body.dark-mode #result {
+      background: var(--dark-card-bg);
+      border: 1px solid var(--dark-border-color);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+
+    body.dark-mode .no-results {
+      color: var(--dark-text-light);
+    }
+
+    .card-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border-left: 4px solid var(--primary);
+    }
+
+    body.dark-mode .card {
+      background: var(--dark-card-bg);
+      border-left: 4px solid var(--dark-accent);
+      border: 1px solid var(--dark-border-color);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card h3 {
+      margin: 0 0 15px;
+      color: var(--primary);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body.dark-mode .card h3 {
+      color: var(--dark-accent);
+    }
+
+    .card p {
+      margin: 8px 0;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    body.dark-mode .card p {
+      color: var(--dark-text-light);
+    }
+
+    .add-btn-box {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 30px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
+    }
+
+    body.dark-mode .add-btn {
+      background: var(--dark-accent);
+      color: #0f172a;
+    }
+
+    body.dark-mode .add-btn:hover {
+      background: #0ea5e9;
+    }
+
+    .match-highlight {
+      background-color: #fff9c4;
+      padding: 0 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    body.dark-mode .match-highlight {
+      background-color: rgba(56, 189, 248, 0.2);
+      color: var(--dark-accent);
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .search-box {
+        flex-direction: column;
+      }
+      
+      .search-box input {
+        width: 100%;
+      }
+      
+      .card-list {
+        grid-template-columns: 1fr;
+      }
+      
+      nav button {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* Stile per il badge di ricerca */
+    .search-type {
+      font-size: 0.85em;
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--primary);
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-left: 10px;
+    }
+
+    body.dark-mode .search-type {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--dark-accent);
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -80,6 +498,244 @@
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    // Dati iniziali
+    const prestazioni = [
+      {
+        nome: "Visita cardiologica",
+        descrizione: "Controllo medico specializzato sul cuore",
+        sinonimi: ["cardiologia", "check-up cuore"],
+        rimborso: "70%"
+      },
+      {
+        nome: "Radiografia",
+        descrizione: "Esame diagnostico con raggi X",
+        sinonimi: ["lastra", "rx"],
+        rimborso: "50%"
+      },
+      {
+        nome: "Analisi del sangue",
+        descrizione: "Prelievo e analisi di laboratorio",
+        sinonimi: ["esami sangue", "emocromo"],
+        rimborso: "60%"
+      },
+      {
+        nome: "Ecografia addominale",
+        descrizione: "Esame diagnostico non invasivo degli organi addominali",
+        sinonimi: ["eco addome", "ultrasuoni addome"],
+        rimborso: "55%"
+      },
+      {
+        nome: "Visita dermatologica",
+        descrizione: "Controllo specialistico per problemi della pelle",
+        sinonimi: ["controllo pelle", "esame dermatologico"],
+        rimborso: "65%"
+      }
+    ];
+
+    const medicinali = [
+      {
+        nome: "Tachipirina",
+        descrizione: "Farmaco antipiretico e antidolorifico",
+        sinonimi: ["paracetamolo"],
+        rimborso: "40%"
+      },
+      {
+        nome: "Ibuprofene",
+        descrizione: "Farmaco antinfiammatorio non steroideo",
+        sinonimi: ["brufen"],
+        rimborso: "30%"
+      },
+      {
+        nome: "Amoxicillina",
+        descrizione: "Farmaco antibiotico per infezioni batteriche",
+        sinonimi: ["antibiotico", "Zimox"],
+        rimborso: "20%"
+      },
+      {
+        nome: "Aspirina",
+        descrizione: "Farmaco antinfiammatorio e antipiretico",
+        sinonimi: ["acido acetilsalicilico"],
+        rimborso: "25%"
+      },
+      {
+        nome: "Augmentin",
+        descrizione: "Antibiotico ad ampio spettro",
+        sinonimi: ["amoxicillina e acido clavulanico"],
+        rimborso: "35%"
+      }
+    ];
+
+    // Elementi DOM
+    const themeToggle = document.getElementById('themeToggle');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultDiv = document.getElementById('result');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    // Dark mode implementation
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+    }
+
+    // Funzione per la ricerca fuzzy
+    function fuzzySearch(query, text) {
+      query = query.toLowerCase();
+      text = text.toLowerCase();
+      
+      if (!query) return false;
+      
+      // Controllo per corrispondenza esatta
+      if (text.includes(query)) return true;
+      
+      // Controllo per corrispondenza fuzzy
+      let index = 0;
+      for (const char of text) {
+        if (char === query[index]) {
+          index++;
+          if (index === query.length) return true;
+        }
+      }
+      return false;
+    }
+
+    // Funzione per evidenziare le corrispondenze
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      
+      const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
+      return text.replace(regex, '<span class="match-highlight">$1</span>');
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    // Funzione ricerca
+    function performSearch() {
+      const query = searchInput.value.trim();
+      
+      if (!query) {
+        resultDiv.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-exclamation-circle fa-3x"></i>
+            <h3>Inserisci un termine di ricerca</h3>
+            <p>Digita una parola chiave nel campo sopra per avviare la ricerca</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const allItems = [
+        ...prestazioni.map(item => ({ ...item, type: 'prestazione' })),
+        ...medicinali.map(item => ({ ...item, type: 'medicinale' }))
+      ];
+      
+      const results = allItems.filter(item => {
+        if (fuzzySearch(query, item.nome)) return true;
+        if (fuzzySearch(query, item.descrizione)) return true;
+        return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
+      });
+      
+      if (results.length === 0) {
+        resultDiv.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search-minus fa-3x"></i>
+            <h3>Nessun risultato trovato</h3>
+            <p>La tua ricerca per "${query}" non ha prodotto risultati</p>
+          </div>
+        `;
+        return;
+      }
+      
+      let html = '';
+      results.forEach(item => {
+        const highlightedNome = highlightMatch(item.nome, query);
+        const highlightedDesc = highlightMatch(item.descrizione, query);
+        const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
+        
+        html += `
+          <div class="card">
+            <h3>${highlightedNome} <span class="search-type">${item.type === 'prestazione' ? 'Prestazione' : 'Medicinale'}</span></h3>
+            <p><strong>Descrizione:</strong> ${highlightedDesc}</p>
+            <p><strong>Sinonimi:</strong> ${highlightedSyn}</p>
+            <p><strong>Rimborso:</strong> ${item.rimborso}</p>
+          </div>
+        `;
+      });
+      
+      resultDiv.innerHTML = html;
+    }
+
+    // Riempimento delle liste
+    function renderLists() {
+      const prestazioniList = document.getElementById('prestazioniList');
+      const medicinaliList = document.getElementById('medicinaliList');
+      
+      prestazioniList.innerHTML = prestazioni.map(p => `
+        <div class="card">
+          <h3>${p.nome}</h3>
+          <p><strong>Descrizione:</strong> ${p.descrizione}</p>
+          <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
+          <p><strong>Rimborso:</strong> ${p.rimborso}</p>
+        </div>
+      `).join('');
+      
+      medicinaliList.innerHTML = medicinali.map(m => `
+        <div class="card">
+          <h3>${m.nome}</h3>
+          <p><strong>Descrizione:</strong> ${m.descrizione}</p>
+          <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
+          <p><strong>Rimborso:</strong> ${m.rimborso}</p>
+        </div>
+      `).join('');
+    }
+
+    // Navigazione tra schede
+    function setupTabs() {
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.forEach(b => b.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+      });
+    }
+
+    // Inizializzazione
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderLists();
+      setupTabs();
+      
+      // Event listeners
+      themeToggle.addEventListener('click', toggleTheme);
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') performSearch();
+      });
+    });
+  </script>
 </body>
 </html>
