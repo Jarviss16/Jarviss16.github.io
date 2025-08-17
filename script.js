@@ -1,128 +1,146 @@
-// Prestazioni con sinonimi / descrizioni
-const prestazioni = [
+// Dati di esempio aggiornati con struttura simile allo screenshot
+let prestazioni = [
   {
-    nome: "Visita cardiologica",
-    descrizione: "Controllo medico specializzato sul cuore",
-    sinonimi: ["cardiologia", "check-up cuore"],
-    rimborso: "70%"
-  },
-  {
-    nome: "Radiografia",
-    descrizione: "Esame diagnostico con raggi X",
-    sinonimi: ["lastra", "rx"],
-    rimborso: "50%"
+    nome: "Ecografia addominale",
+    descrizione: "Esame diagnostico per visualizzare gli organi addominali",
+    sinonimi: ["eco addome", "ultrasuoni addome"],
+    categoria: "Diagnostica per immagini",
+    rimborso: "70%",
+    autori: 15,
+    anno: "2023"
   },
   {
     nome: "Analisi del sangue",
-    descrizione: "Prelievo e analisi di laboratorio",
-    sinonimi: ["esami sangue", "emocromo"],
-    rimborso: "60%"
+    descrizione: "Esame di laboratorio per valutare parametri ematici",
+    sinonimi: ["esame emocromocitometrico", "prelievo venoso"],
+    categoria: "Analisi di laboratorio",
+    rimborso: "60%",
+    autori: 12,
+    anno: "2023"
   }
 ];
 
-// Medicinali con sinonimi / descrizioni
-const medicinali = [
+let medicinali = [
   {
-    nome: "Tachipirina",
-    descrizione: "Farmaco antipiretico e antidolorifico",
-    sinonimi: ["paracetamolo"],
-    rimborso: "40%"
-  },
-  {
-    nome: "Ibuprofene",
-    descrizione: "Farmaco antinfiammatorio non steroideo",
-    sinonimi: ["brufen"],
-    rimborso: "30%"
-  },
-  {
-    nome: "Antibiotico",
-    descrizione: "Farmaco contro le infezioni batteriche",
-    sinonimi: ["amoxicillina"],
-    rimborso: "20%"
+    nome: "Relaggetti",
+    descrizione: "Farmaco per il trattamento di condizioni specifiche",
+    sinonimi: ["Relaget", "Relaxget"],
+    categoria: "Farmaci specialistici",
+    rimborso: "25%",
+    autori: 8,
+    anno: "2023"
   }
 ];
 
-// Funzione ricerca
-document.getElementById("searchBtn").addEventListener("click", () => {
-  const query = document.getElementById("searchInput").value.toLowerCase();
-  let found = null;
+// Funzione per visualizzare le tabelle
+function displayTables() {
+  const prestazioniTable = document.createElement('div');
+  prestazioniTable.innerHTML = `
+    <h2 class="section-title">Lista Prestazioni</h2>
+    ${generateTermList(prestazioni)}
+    <h3 class="subsection-title">Categorie</h3>
+    <div class="category-list">
+      ${Array.from(new Set(prestazioni.map(p => p.categoria))).map(cat => 
+        `<div class="category-item">${cat}</div>`
+      ).join('')}
+    </div>
+    <h3 class="subsection-title">Aggiornamenti Recenti</h3>
+    ${generateUpdateTable(prestazioni)}
+  `;
+  document.getElementById('prestazioniList').appendChild(prestazioniTable);
 
-  // cerca nelle prestazioni
-  for (let p of prestazioni) {
-    if (
-      p.nome.toLowerCase() === query ||
-      p.sinonimi.some(s => s.toLowerCase() === query)
-    ) {
-      found = p;
-      break;
-    }
-  }
+  const medicinaliTable = document.createElement('div');
+  medicinaliTable.innerHTML = `
+    <h2 class="section-title">Lista Medicinali</h2>
+    ${generateTermList(medicinali)}
+    <h3 class="subsection-title">Categorie</h3>
+    <div class="category-list">
+      ${Array.from(new Set(medicinali.map(m => m.categoria))).map(cat => 
+        `<div class="category-item">${cat}</div>`
+      ).join('')}
+    </div>
+    <h3 class="subsection-title">Aggiornamenti Recenti</h3>
+    ${generateUpdateTable(medicinali)}
+  `;
+  document.getElementById('medicinaliList').appendChild(medicinaliTable);
+}
 
-  // cerca nei medicinali
-  if (!found) {
-    for (let m of medicinali) {
-      if (
-        m.nome.toLowerCase() === query ||
-        m.sinonimi.some(s => s.toLowerCase() === query)
-      ) {
-        found = m;
-        break;
-      }
-    }
-  }
-
-  if (found) {
-    document.getElementById("result").innerHTML = `
-      <div class="card">
-        <h3>${found.nome}</h3>
-        <p><strong>Descrizione:</strong> ${found.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${found.sinonimi.join(", ")}</p>
-        <p><strong>Rimborso:</strong> ${found.rimborso}</p>
+function generateTermList(items) {
+  return items.map(item => `
+    <div class="term-item">
+      <div class="term-name">${item.nome}</div>
+      <div class="term-details">
+        <p><strong>Descrizione:</strong> ${item.descrizione}</p>
+        <p><strong>Sinonimi:</strong> ${item.sinonimi.join(", ")}</p>
+        <p><strong>Categoria:</strong> ${item.categoria}</p>
+        <p><strong>Rimborso:</strong> ${item.rimborso}</p>
       </div>
-    `;
-  } else {
-    document.getElementById("result").innerHTML = "❌ Nessun risultato trovato.";
-  }
-});
+    </div>
+  `).join('');
+}
 
-// Riempio lista prestazioni
-const prestazioniList = document.getElementById("prestazioniList");
-prestazioni.forEach(p => {
-  let div = document.createElement("div");
-  div.classList.add("card");
-  div.innerHTML = `
-    <h3>${p.nome}</h3>
-    <p><strong>Descrizione:</strong> ${p.descrizione}</p>
-    <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
-    <p><strong>Rimborso:</strong> ${p.rimborso}</p>
+function generateUpdateTable(items) {
+  return `
+    <table>
+      <thead>
+        <tr>
+          <th>Rimborso (%)</th>
+          <th>Autori</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map(item => `
+          <tr>
+            <td>${item.rimborso}</td>
+            <td>${item.autori}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
   `;
-  prestazioniList.appendChild(div);
+}
+
+// Chiamata iniziale per visualizzare le tabelle
+document.addEventListener('DOMContentLoaded', () => {
+  displayTables();
+  
+  // Carica dati da localStorage se presenti
+  const savedPrestazioni = localStorage.getItem('prestazioni');
+  const savedMedicinali = localStorage.getItem('medicinali');
+  
+  if (savedPrestazioni) prestazioni = JSON.parse(savedPrestazioni);
+  if (savedMedicinali) medicinali = JSON.parse(savedMedicinali);
+  
+  updateLists();
 });
 
-// Riempio lista medicinali
-const medicinaliList = document.getElementById("medicinaliList");
-medicinali.forEach(m => {
-  let div = document.createElement("div");
-  div.classList.add("card");
-  div.innerHTML = `
-    <h3>${m.nome}</h3>
-    <p><strong>Descrizione:</strong> ${m.descrizione}</p>
-    <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
-    <p><strong>Rimborso:</strong> ${m.rimborso}</p>
-  `;
-  medicinaliList.appendChild(div);
-});
+// Funzione per aggiornare le liste
+function updateLists() {
+  // Pulisci i contenitori
+  document.getElementById('prestazioniList').innerHTML = '';
+  document.getElementById('medicinaliList').innerHTML = '';
+  
+  // Ricrea le tabelle
+  displayTables();
+  
+  // Salva in localStorage
+  localStorage.setItem('prestazioni', JSON.stringify(prestazioni));
+  localStorage.setItem('medicinali', JSON.stringify(medicinali));
+}
 
-// Navigazione tra schede
-const tabs = document.querySelectorAll(".tab-btn");
-const contents = document.querySelectorAll(".tab-content");
-
-tabs.forEach(btn => {
-  btn.addEventListener("click", () => {
-    tabs.forEach(b => b.classList.remove("active"));
-    contents.forEach(c => c.classList.remove("active"));
-
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.tab).classList.add("active");
+// Gestione del form Google
+function setupFormButton() {
+  const formUrl = "https://forms.gle/x2FanzzPzVdPveU57";
+  
+  document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.href = formUrl;
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      window.open(formUrl, '_blank');
+      // Qui potresti aggiungere tracking dell'evento se necessario
+    });
   });
-});
+}
+
+// Inizializzazione
+setupFormButton();
