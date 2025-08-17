@@ -3,60 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dizionario Sanitario</title>
+  <title>Dizionario Sanitario con Dark Mode</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      font-family: Arial, sans-serif;
+    :root {
+      /* Light mode colors */
+      --primary: #ff6b35;
+      --primary-dark: #e55a00;
+      --primary-light: #ff9e56;
+      --bg-color: #f8f9fa;
+      --card-bg: #ffffff;
+      --text-color: #333333;
+      --text-light: #666666;
+      --border-color: #e0e0e0;
+      --header-bg: linear-gradient(135deg, #ff6b35, #e55a00);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      
+      /* Dark mode colors (will be set by JavaScript) */
+      --dark-bg-color: #121212;
+      --dark-card-bg: #1e1e1e;
+      --dark-text-color: #f0f0f0;
+      --dark-text-light: #b0b0b0;
+      --dark-border-color: #333333;
+      --dark-header-bg: linear-gradient(135deg, #2a0d00, #1a0600);
+    }
+
+    * {
       margin: 0;
       padding: 0;
-      background: #f8f9fa;
-      color: #222;
+      box-sizing: border-box;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    body.dark-mode {
+      background-color: var(--dark-bg-color);
+      color: var(--dark-text-color);
     }
 
     header {
       text-align: center;
-      padding: 30px 20px;
-      background: linear-gradient(to right, #ff9966, #ff5e62);
+      padding: 25px 20px;
+      background: var(--header-bg);
       color: white;
-      border-bottom-left-radius: 15px;
-      border-bottom-right-radius: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    body.dark-mode header {
+      background: var(--dark-header-bg);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.3s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      font-size: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
     }
 
     nav {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
     nav button {
-      padding: 12px 20px;
+      padding: 12px 24px;
       border: none;
-      border-radius: 8px;
-      background: white;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
       cursor: pointer;
       font-size: 15px;
-      transition: 0.3s;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    nav button:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     nav button.active {
-      background: #ff5e62;
-      color: white;
-      font-weight: bold;
+      background: white;
+      color: var(--primary);
+      box-shadow: var(--shadow);
     }
 
     main {
       padding: 40px 20px;
-      max-width: 900px;
-      margin: auto;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .tab-content {
       display: none;
-      margin-top: 40px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .tab-content.active {
@@ -65,166 +152,308 @@
 
     h2 {
       text-align: center;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      color: var(--primary);
+      font-size: 1.8rem;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    body.dark-mode h2 {
+      color: var(--primary-light);
+    }
+
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: var(--primary);
+      border-radius: 2px;
+    }
+
+    body.dark-mode h2::after {
+      background: var(--primary-light);
+    }
+
+    .search-container {
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+    }
+
+    body.dark-mode .search-container {
+      background: var(--dark-card-bg);
     }
 
     .search-box {
       display: flex;
-      justify-content: center;
       gap: 15px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .search-box input {
-      width: 60%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      flex: 1;
+      padding: 15px 20px;
+      border-radius: 50px;
+      border: 2px solid var(--border-color);
       font-size: 16px;
+      transition: all 0.3s ease;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    body.dark-mode .search-box input {
+      background-color: var(--dark-card-bg);
+      color: var(--dark-text-color);
+      border-color: var(--dark-border-color);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
     }
 
     .search-box button {
-      padding: 12px 25px;
-      background: #ff5e62;
-      border: none;
+      padding: 15px 30px;
+      background: var(--primary);
       color: white;
-      font-size: 16px;
-      border-radius: 8px;
+      border: none;
+      border-radius: 50px;
       cursor: pointer;
-      transition: 0.3s;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .search-box button:hover {
-      background: #ff3b47;
+      background: var(--primary-dark);
+      transform: translateY(-2px);
     }
 
     #result {
-      margin-top: 25px;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      min-height: 60px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      min-height: 200px;
     }
 
-    /* Cards stile box */
+    body.dark-mode #result {
+      background: var(--dark-card-bg);
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+    }
+
+    body.dark-mode .no-results {
+      color: var(--dark-text-light);
+    }
+
     .card-list {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
     }
 
     .card {
-      background: #fff;
-      padding: 18px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border-left: 4px solid var(--primary);
+    }
+
+    body.dark-mode .card {
+      background: var(--dark-card-bg);
+      border-left-color: var(--primary-light);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
     }
 
     .card h3 {
-      margin: 0 0 8px;
-      color: #ff5e62;
+      margin: 0 0 15px;
+      color: var(--primary);
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    body.dark-mode .card h3 {
+      color: var(--primary-light);
     }
 
     .card p {
-      margin: 5px 0;
-      font-size: 14px;
-      color: #444;
+      margin: 8px 0;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    body.dark-mode .card p {
+      color: var(--dark-text-light);
     }
 
     .add-btn-box {
       text-align: center;
-      margin-top: 25px;
+      margin-top: 40px;
     }
 
     .add-btn {
-      display: inline-block;
-      padding: 12px 20px;
-      background: #ff9966;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 30px;
+      background: var(--primary);
       color: white;
-      border-radius: 8px;
-      font-weight: bold;
+      border-radius: 50px;
+      font-weight: 600;
       text-decoration: none;
-      transition: 0.3s;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
     }
 
     .add-btn:hover {
-      background: #ff5e62;
+      background: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);
     }
-    
-    /* Stili per la ricerca fuzzy */
-    .no-results {
-      text-align: center;
-      color: #ff5e62;
-      padding: 20px;
-      font-weight: bold;
-    }
-    
-    .search-type {
-      font-size: 0.9em;
-      color: #888;
-      margin-left: 8px;
-    }
-    
+
     .match-highlight {
       background-color: #fff9c4;
-      padding: 0 2px;
-      border-radius: 3px;
+      padding: 0 4px;
+      border-radius: 4px;
+      font-weight: 600;
+      color: var(--primary-dark);
     }
-    
-    /* Nuovo stile per il pulsante nella ricerca */
-    .search-section .add-btn-box {
-      margin-top: 30px;
+
+    body.dark-mode .match-highlight {
+      background-color: #5d4037;
+      color: #ffab91;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .search-box {
+        flex-direction: column;
+      }
+      
+      .search-box input {
+        width: 100%;
+      }
+      
+      .card-list {
+        grid-template-columns: 1fr;
+      }
+      
+      nav button {
+        padding: 10px 15px;
+        font-size: 14px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h2 {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Dizionario Sanitario</h1>
+    <div class="header-top">
+      <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
+      <button class="theme-toggle" id="themeToggle">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+    
     <nav>
-      <button class="tab-btn active" data-tab="ricerca">🔍 Ricerca</button>
-      <button class="tab-btn" data-tab="prestazioni">📋 Lista Prestazioni</button>
-      <button class="tab-btn" data-tab="medicinali">💊 Lista Medicinali</button>
+      <button class="tab-btn active" data-tab="ricerca">
+        <i class="fas fa-search"></i> Ricerca
+      </button>
+      <button class="tab-btn" data-tab="prestazioni">
+        <i class="fas fa-stethoscope"></i> Prestazioni
+      </button>
+      <button class="tab-btn" data-tab="medicinali">
+        <i class="fas fa-pills"></i> Medicinali
+      </button>
     </nav>
   </header>
 
   <main>
     <!-- Scheda Ricerca -->
     <section id="ricerca" class="tab-content active">
-      <h2>Ricerca Prestazione o Medicinale</h2>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Inserisci una parola chiave..." autocomplete="off">
-        <button id="searchBtn">Cerca</button>
+      <div class="search-container">
+        <h2><i class="fas fa-search"></i> Cerca nel Dizionario</h2>
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="Inserisci una prestazione o medicinale..." autocomplete="off">
+          <button id="searchBtn">
+            <i class="fas fa-search"></i> Cerca
+          </button>
+        </div>
       </div>
-      <div id="result"></div>
       
-      <!-- Pulsante Aggiungi Termine nella Ricerca -->
+      <div id="result">
+        <div class="no-results">
+          <i class="fas fa-search fa-3x"></i>
+          <h3>Inizia la tua ricerca</h3>
+          <p>Digita un termine nel campo di ricerca per trovare prestazioni o medicinali</p>
+        </div>
+      </div>
+      
       <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">➕ Aggiungi termine</a>
+        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+          <i class="fas fa-plus-circle"></i> Aggiungi termine
+        </a>
       </div>
     </section>
 
     <!-- Scheda Prestazioni -->
     <section id="prestazioni" class="tab-content">
-      <h2>Lista Prestazioni</h2>
+      <h2><i class="fas fa-stethoscope"></i> Lista Prestazioni</h2>
       <div id="prestazioniList" class="card-list"></div>
       <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">➕ Aggiungi termine</a>
+        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+          <i class="fas fa-plus-circle"></i> Aggiungi termine
+        </a>
       </div>
     </section>
 
     <!-- Scheda Medicinali -->
     <section id="medicinali" class="tab-content">
-      <h2>Lista Medicinali</h2>
+      <h2><i class="fas fa-pills"></i> Lista Medicinali</h2>
       <div id="medicinaliList" class="card-list"></div>
       <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">➕ Aggiungi termine</a>
+        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+          <i class="fas fa-plus-circle"></i> Aggiungi termine
+        </a>
       </div>
     </section>
   </main>
 
   <script>
-    // Prestazioni con sinonimi / descrizioni
+    // Dati iniziali
     const prestazioni = [
       {
         nome: "Visita cardiologica",
@@ -258,7 +487,6 @@
       }
     ];
 
-    // Medicinali con sinonimi / descrizioni
     const medicinali = [
       {
         nome: "Tachipirina",
@@ -292,6 +520,37 @@
       }
     ];
 
+    // Elementi DOM
+    const themeToggle = document.getElementById('themeToggle');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const resultDiv = document.getElementById('result');
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = document.querySelectorAll('.tab-content');
+
+    // Dark mode implementation
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.body.classList.add('dark-mode');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+      } else {
+        localStorage.setItem('theme', 'light');
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+    }
+
     // Funzione per la ricerca fuzzy
     function fuzzySearch(query, text) {
       query = query.toLowerCase();
@@ -313,7 +572,7 @@
       return false;
     }
 
-    // Funzione per evidenziare le corrispondenze nel testo
+    // Funzione per evidenziare le corrispondenze
     function highlightMatch(text, query) {
       if (!query) return text;
       
@@ -321,18 +580,22 @@
       return text.replace(regex, '<span class="match-highlight">$1</span>');
     }
 
-    // Funzione per evitare problemi con caratteri speciali nelle regex
     function escapeRegExp(string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 
-    // Funzione ricerca migliorata con fuzzy search
+    // Funzione ricerca
     function performSearch() {
-      const query = document.getElementById("searchInput").value.trim();
-      const resultDiv = document.getElementById("result");
+      const query = searchInput.value.trim();
       
       if (!query) {
-        resultDiv.innerHTML = '<div class="no-results">Inserisci un termine di ricerca</div>';
+        resultDiv.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-exclamation-circle fa-3x"></i>
+            <h3>Inserisci un termine di ricerca</h3>
+            <p>Digita una parola chiave nel campo sopra per avviare la ricerca</p>
+          </div>
+        `;
         return;
       }
       
@@ -342,18 +605,19 @@
       ];
       
       const results = allItems.filter(item => {
-        // Controlla nel nome
         if (fuzzySearch(query, item.nome)) return true;
-        
-        // Controlla nella descrizione
         if (fuzzySearch(query, item.descrizione)) return true;
-        
-        // Controlla nei sinonimi
         return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
       });
       
       if (results.length === 0) {
-        resultDiv.innerHTML = '<div class="no-results">❌ Nessun risultato trovato per "' + query + '"</div>';
+        resultDiv.innerHTML = `
+          <div class="no-results">
+            <i class="fas fa-search-minus fa-3x"></i>
+            <h3>Nessun risultato trovato</h3>
+            <p>La tua ricerca per "${query}" non ha prodotto risultati</p>
+          </div>
+        `;
         return;
       }
       
@@ -376,60 +640,56 @@
       resultDiv.innerHTML = html;
     }
 
-    // Riempio lista prestazioni
-    const prestazioniList = document.getElementById("prestazioniList");
-    prestazioni.forEach(p => {
-      let div = document.createElement("div");
-      div.classList.add("card");
-      div.innerHTML = `
-        <h3>${p.nome}</h3>
-        <p><strong>Descrizione:</strong> ${p.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
-        <p><strong>Rimborso:</strong> ${p.rimborso}</p>
-      `;
-      prestazioniList.appendChild(div);
-    });
-
-    // Riempio lista medicinali
-    const medicinaliList = document.getElementById("medicinaliList");
-    medicinali.forEach(m => {
-      let div = document.createElement("div");
-      div.classList.add("card");
-      div.innerHTML = `
-        <h3>${m.nome}</h3>
-        <p><strong>Descrizione:</strong> ${m.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
-        <p><strong>Rimborso:</strong> ${m.rimborso}</p>
-      `;
-      medicinaliList.appendChild(div);
-    });
+    // Riempimento delle liste
+    function renderLists() {
+      const prestazioniList = document.getElementById('prestazioniList');
+      const medicinaliList = document.getElementById('medicinaliList');
+      
+      prestazioniList.innerHTML = prestazioni.map(p => `
+        <div class="card">
+          <h3>${p.nome}</h3>
+          <p><strong>Descrizione:</strong> ${p.descrizione}</p>
+          <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
+          <p><strong>Rimborso:</strong> ${p.rimborso}</p>
+        </div>
+      `).join('');
+      
+      medicinaliList.innerHTML = medicinali.map(m => `
+        <div class="card">
+          <h3>${m.nome}</h3>
+          <p><strong>Descrizione:</strong> ${m.descrizione}</p>
+          <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
+          <p><strong>Rimborso:</strong> ${m.rimborso}</p>
+        </div>
+      `).join('');
+    }
 
     // Navigazione tra schede
-    const tabs = document.querySelectorAll(".tab-btn");
-    const contents = document.querySelectorAll(".tab-content");
+    function setupTabs() {
+      tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabs.forEach(b => b.classList.remove('active'));
+          contents.forEach(c => c.classList.remove('active'));
+          
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+      });
+    }
 
-    tabs.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabs.forEach(b => b.classList.remove("active"));
-        contents.forEach(c => c.classList.remove("active"));
-
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.tab).classList.add("active");
+    // Inizializzazione
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderLists();
+      setupTabs();
+      
+      // Event listeners
+      themeToggle.addEventListener('click', toggleTheme);
+      searchBtn.addEventListener('click', performSearch);
+      searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') performSearch();
       });
     });
-
-    // Event listeners per la ricerca
-    document.getElementById("searchBtn").addEventListener("click", performSearch);
-    
-    // Ricerca con il tasto Invio
-    document.getElementById("searchInput").addEventListener("keyup", (e) => {
-      if (e.key === "Enter") {
-        performSearch();
-      }
-    });
-    
-    // Messaggio iniziale
-    document.getElementById("result").innerHTML = '<div class="no-results">Inserisci un termine e premi Cerca o Invio</div>';
   </script>
 </body>
 </html>
