@@ -47,76 +47,87 @@ let medicinali = [
   }
 ];
 
-// Caricamento iniziale
-document.addEventListener('DOMContentLoaded', () => {
-  // Carica dati da localStorage se presenti
+// Inizializzazione
+document.addEventListener('DOMContentLoaded', function() {
+  // Carica dati salvati
+  loadSavedData();
+  
+  // Renderizza le liste
+  renderAllLists();
+  
+  // Imposta gli event listeners
+  setupEventListeners();
+  
+  // Aggiorna i contatori
+  updateCounters();
+});
+
+// Funzioni principali
+function loadSavedData() {
   const savedPrestazioni = localStorage.getItem('prestazioni');
   const savedMedicinali = localStorage.getItem('medicinali');
   
   if (savedPrestazioni) prestazioni = JSON.parse(savedPrestazioni);
   if (savedMedicinali) medicinali = JSON.parse(savedMedicinali);
+}
+
+function renderAllLists() {
+  renderList('prestazioniList', prestazioni);
+  renderList('medicinaliList', medicinali);
+}
+
+function renderList(containerId, items) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
   
-  renderLists();
-  setupEventListeners();
-});
-
-// Funzioni di rendering
-function renderLists() {
-  renderPrestazioni();
-  renderMedicinali();
+  container.innerHTML = items.map(item => createCardHTML(item)).join('');
 }
 
-function renderPrestazioni() {
-  const container = document.getElementById('prestazioniList');
-  container.innerHTML = prestazioni.map(prestazione => `
+function createCardHTML(item) {
+  const isPrestazione = item.categoria && item.categoria.toLowerCase() !== 'antidolorifici' && 
+                        item.categoria.toLowerCase() !== 'antinfiammatori' && 
+                        item.categoria.toLowerCase() !== 'antibiotici';
+  
+  return `
     <div class="term-card">
-      <h3>${prestazione.nome}</h3>
-      <p><strong>Descrizione:</strong> ${prestazione.descrizione}</p>
-      ${prestazione.sinonimi.length ? `<p><strong>Sinonimi:</strong> ${prestazione.sinonimi.join(', ')}</p>` : ''}
+      <h3>${item.nome} 
+        <span class="item-type">${isPrestazione ? '📋' : '💊'}</span>
+      </h3>
+      <p><strong>Descrizione:</strong> ${item.descrizione}</p>
+      ${item.sinonimi && item.sinonimi.length ? 
+        `<p><strong>Sinonimi:</strong> ${item.sinonimi.join(', ')}</p>` : ''}
       <div class="term-meta">
-        <span><strong>Categoria:</strong> ${prestazione.categoria}</span>
-        <span><strong>Rimborso:</strong> ${prestazione.rimborso}</span>
+        <span><strong>Categoria:</strong> ${item.categoria || 'N/A'}</span>
+        <span><strong>Rimborso:</strong> ${item.rimborso}</span>
       </div>
     </div>
-  `).join('');
+  `;
 }
 
-function renderMedicinali() {
-  const container = document.getElementById('medicinaliList');
-  container.innerHTML = medicinali.map(medicinale => `
-    <div class="term-card">
-      <h3>${medicinale.nome}</h3>
-      <p><strong>Descrizione:</strong> ${medicinale.descrizione}</p>
-      ${medicinale.sinonimi.length ? `<p><strong>Sinonimi:</strong> ${medicinale.sinonimi.join(', ')}</p>` : ''}
-      <div class="term-meta">
-        <span><strong>Categoria:</strong> ${medicinale.categoria}</span>
-        <span><strong>Rimborso:</strong> ${medicinale.rimborso}</span>
-      </div>
-    </div>
-  `).join('');
-}
-
-// Ricerca
 function setupEventListeners() {
-  // Ricerca
-  document.getElementById('searchBtn').addEventListener('click', performSearch);
-  document.getElementById('searchInput').addEventListener('keyup', (e) => {
-    if (e.key === 'Enter') performSearch();
-  });
-  
-  // Tabs
-  const tabs = document.querySelectorAll('.tab-btn');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      
-      const tabId = tab.dataset.tab;
+  // Gestione tabs
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  tabButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Rimuovi active da tutti i tab e contenuti
+      tabButtons.forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.remove('active');
       });
+      
+      // Aggiungi active al tab cliccato
+      this.classList.add('active');
+      
+      // Mostra il contenuto correlato
+      const tabId = this.getAttribute('data-tab');
       document.getElementById(tabId).classList.add('active');
     });
+  });
+  
+  // Ricerca
+  document.getElementById('searchBtn').addEventListener('click', performSearch);
+  document.getElementById('searchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') performSearch();
   });
 }
 
@@ -129,7 +140,7 @@ function performSearch() {
     return;
   }
   
-  // Cerca in entrambe le liste
+  // Cerca in tutte le voci
   const allItems = [
     ...prestazioni.map(item => ({ ...item, type: 'prestazione' })),
     ...medicinali.map(item => ({ ...item, type: 'medicinale' }))
@@ -143,25 +154,24 @@ function performSearch() {
   );
   
   if (results.length === 0) {
-    resultsContainer.innerHTML = '<p class="no-results">Nessun risultato trovato per "' + query + '"</p>';
+    resultsContainer.innerHTML = `<p class="no-results">Nessun risultato trovato per "${query}"</p>`;
     return;
   }
   
-  resultsContainer.innerHTML = results.map(item => `
-    <div class="term-card">
-      <h3>${item.nome} <span class="item-type">${item.type === 'prestazione' ? '📋' : '💊'}</span></h3>
-      <p><strong>Descrizione:</strong> ${item.descrizione}</p>
-      ${item.sinonimi && item.sinonimi.length ? `<p><strong>Sinonimi:</strong> ${item.sinonimi.join(', ')}</p>` : ''}
-      <div class="term-meta">
-        <span><strong>Categoria:</strong> ${item.categoria || 'N/A'}</span>
-        <span><strong>Rimborso:</strong> ${item.rimborso}</span>
-      </div>
-    </div>
-  `).join('');
+  resultsContainer.innerHTML = results.map(item => createCardHTML(item)).join('');
 }
 
-// Salva dati in localStorage
+function updateCounters() {
+  const prestazioniCount = document.querySelector('#prestazioni .list-count');
+  const medicinaliCount = document.querySelector('#medicinali .list-count');
+  
+  if (prestazioniCount) prestazioniCount.textContent = `${prestazioni.length} elementi`;
+  if (medicinaliCount) medicinaliCount.textContent = `${medicinali.length} elementi`;
+}
+
+// Salva i dati
 function saveData() {
   localStorage.setItem('prestazioni', JSON.stringify(prestazioni));
   localStorage.setItem('medicinali', JSON.stringify(medicinali));
+  updateCounters();
 }
