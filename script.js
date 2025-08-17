@@ -1,85 +1,57 @@
-// Dati prestazioni e medicinali pre-caricati
-const prestazioni = [
-  { parola: "Visita cardiologica", sinonimi: "cuore, cardiologia", categoria: "Visite specialistiche", rimborso: "70%" },
-  { parola: "Analisi del sangue", sinonimi: "prelievo, emocromo", categoria: "Laboratorio", rimborso: "80%" }
-];
+// Dizionario di prestazioni e medicinali (aggiungi tu qui dentro!)
+const prestazioni = {
+  "visita cardiologica": "Prestazione - Rimborso 70%",
+  "radiografia": "Prestazione - Rimborso 50%",
+  "analisi del sangue": "Prestazione - Rimborso 60%"
+};
 
-const medicinali = [
-  { parola: "Paracetamolo", sinonimi: "tachipirina, antifebbrile", categoria: "Antidolorifici", rimborso: "60%" },
-  { parola: "Ibuprofene", sinonimi: "brufen, antinfiammatorio", categoria: "FANS", rimborso: "65%" }
-];
+const medicinali = {
+  "tachipirina": "Medicinale - Rimborso 40%",
+  "ibuprofene": "Medicinale - Rimborso 30%",
+  "antibiotico": "Medicinale - Rimborso 20%"
+};
 
-// Funzione cambio tab
-document.querySelectorAll(".tab-btn").forEach(button => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
-    document.querySelectorAll(".tab-content").forEach(tab => tab.classList.remove("active"));
+// Funzione per ricerca
+document.getElementById("searchBtn").addEventListener("click", () => {
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  let result = "";
 
-    button.classList.add("active");
-    document.getElementById(button.dataset.tab).classList.add("active");
-  });
+  if (prestazioni[query]) {
+    result = prestazioni[query];
+  } else if (medicinali[query]) {
+    result = medicinali[query];
+  } else {
+    result = "❌ Nessun risultato trovato.";
+  }
+
+  document.getElementById("result").textContent = result;
 });
 
-// Popola tabella prestazioni
-function caricaPrestazioni() {
-  const corpo = document.getElementById("corpoTabella");
-  corpo.innerHTML = "";
-  prestazioni.forEach(p => {
-    corpo.innerHTML += `
-      <tr>
-        <td>${p.parola}</td>
-        <td>${p.sinonimi}</td>
-        <td>${p.categoria}</td>
-        <td>${p.rimborso}</td>
-      </tr>`;
+// Riempio le liste
+const prestazioniList = document.getElementById("prestazioniList");
+for (let key in prestazioni) {
+  let li = document.createElement("li");
+  li.textContent = `${key} → ${prestazioni[key]}`;
+  prestazioniList.appendChild(li);
+}
+
+const medicinaliList = document.getElementById("medicinaliList");
+for (let key in medicinali) {
+  let li = document.createElement("li");
+  li.textContent = `${key} → ${medicinali[key]}`;
+  medicinaliList.appendChild(li);
+}
+
+// Navigazione tra schede
+const tabs = document.querySelectorAll(".tab-btn");
+const contents = document.querySelectorAll(".tab-content");
+
+tabs.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabs.forEach(b => b.classList.remove("active"));
+    contents.forEach(c => c.classList.remove("active"));
+
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
   });
-}
-
-// Popola tabella medicinali
-function caricaMedicinali() {
-  const corpo = document.getElementById("corpoTabellaMedicinali");
-  corpo.innerHTML = "";
-  medicinali.forEach(m => {
-    corpo.innerHTML += `
-      <tr>
-        <td>${m.parola}</td>
-        <td>${m.sinonimi}</td>
-        <td>${m.categoria}</td>
-        <td>${m.rimborso}</td>
-      </tr>`;
-  });
-}
-
-// Ricerca su entrambe le liste
-function cerca() {
-  const query = document.getElementById("searchInput").value.toLowerCase();
-  const risultato = document.getElementById("risultato");
-  risultato.innerHTML = "";
-
-  const trovati = [
-    ...prestazioni.filter(p =>
-      p.parola.toLowerCase().includes(query) || p.sinonimi.toLowerCase().includes(query)
-    ),
-    ...medicinali.filter(m =>
-      m.parola.toLowerCase().includes(query) || m.sinonimi.toLowerCase().includes(query)
-    )
-  ];
-
-  if (trovati.length > 0) {
-    trovati.forEach(item => {
-      risultato.innerHTML += `
-        <div class="result-item">
-          <strong>${item.parola}</strong><br>
-          <small>Sinonimi: ${item.sinonimi}</small><br>
-          <small>Categoria: ${item.categoria}</small><br>
-          <small>Rimborso: ${item.rimborso}</small>
-        </div>`;
-    });
-  } else {
-    risultato.innerHTML = "<p>Nessun risultato trovato</p>";
-  }
-}
-
-// Avvio
-caricaPrestazioni();
-caricaMedicinali();
+});
