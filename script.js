@@ -1,14 +1,37 @@
+// ==============================
+// DIZIONARIO BASE
+// ==============================
 let dizionario = {
   "ecografia": "Diagnostica",
   "analisi sangue": "Laboratorio",
   "visita cardiologica": "Visite Specialistiche"
 };
 
-let currentSection = "";
 let modalMode = "";
 let editingKey = null;
 
-// Funzione di ricerca
+// ==============================
+// CAMBIO SEZIONE (tabs/schede)
+// ==============================
+function showSection(section) {
+  // Nascondo tutte le sezioni
+  document.querySelectorAll(".section").forEach(div => {
+    div.style.display = "none";
+  });
+
+  // Mostro solo quella scelta
+  document.getElementById(section).style.display = "block";
+
+  // Aggiorno lo stato dei bottoni
+  document.querySelectorAll(".tab-button").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  document.querySelector(`.tab-button[data-section="${section}"]`).classList.add("active");
+}
+
+// ==============================
+// FUNZIONE DI RICERCA
+// ==============================
 function searchWord() {
   const input = document.getElementById("searchInput").value.toLowerCase();
   const resultDiv = document.getElementById("result");
@@ -20,7 +43,9 @@ function searchWord() {
   }
 }
 
-// Popola lista dizionario
+// ==============================
+// POPOLA LISTA
+// ==============================
 function populateList() {
   const list = document.getElementById("wordList");
   list.innerHTML = "";
@@ -33,28 +58,15 @@ function populateList() {
 }
 
 // ==============================
-// FUNZIONE AGGIORNA PULSANTI
+// PULSANTI NUOVA CATEGORIA/MEDICINALE
 // ==============================
 function aggiungiNuovaCategoria(tipo) {
-  // --- APPUNTO: Questo era il vecchio codice che apriva il modal ---
-  /*
-  currentSection = tipo;
-  modalMode = 'add';
-  editingKey = null;
-  document.getElementById("modalTitle").textContent =
-    tipo === "categoria" ? "Aggiungi Categoria" : "Aggiungi Medicinale";
-  document.getElementById("modalParola").value = "";
-  document.getElementById("modalCategoria").value = "";
-  document.getElementById("modal").classList.add("active");
-  document.getElementById("modalParola").focus();
-  */
-
-  // 🔗 Ora invece apre il Google Form in una nuova scheda
+  // Ora apre direttamente Google Form
   window.open("https://forms.gle/x2FanzzPzVdPveU57", "_blank");
 }
 
 // ==============================
-// MODAL (vecchio codice, ora disabilitato)
+// MODAL (non più usato, lasciato per upgrade futuri)
 // ==============================
 function closeModal() {
   document.getElementById("modal").classList.remove("active");
@@ -81,4 +93,5 @@ function saveModal() {
 // ==============================
 window.onload = () => {
   populateList();
+  showSection("search"); // Avvia dalla scheda ricerca
 };
