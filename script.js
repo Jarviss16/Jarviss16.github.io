@@ -1,97 +1,82 @@
-// ==============================
-// DIZIONARIO BASE
-// ==============================
-let dizionario = {
-  "ecografia": "Diagnostica",
-  "analisi sangue": "Laboratorio",
-  "visita cardiologica": "Visite Specialistiche"
-};
+// script.js
 
-let modalMode = "";
-let editingKey = null;
+// --- GESTIONE TAB ---
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tabId = btn.getAttribute("data-tab");
 
-// ==============================
-// CAMBIO SEZIONE (tabs/schede)
-// ==============================
-function showSection(section) {
-  // Nascondo tutte le sezioni
-  document.querySelectorAll(".section").forEach(div => {
-    div.style.display = "none";
-  });
+    // Rimuovi la classe "active" da tutti i bottoni
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
 
-  // Mostro solo quella scelta
-  document.getElementById(section).style.display = "block";
+    // Nascondi tutte le sezioni
+    document.querySelectorAll(".tab-content").forEach(sec => sec.classList.remove("active"));
 
-  // Aggiorno lo stato dei bottoni
-  document.querySelectorAll(".tab-button").forEach(btn => {
-    btn.classList.remove("active");
-  });
-  document.querySelector(`.tab-button[data-section="${section}"]`).classList.add("active");
-}
+    // Aggiungi "active" al bottone cliccato
+    btn.classList.add("active");
 
-// ==============================
-// FUNZIONE DI RICERCA
-// ==============================
-function searchWord() {
-  const input = document.getElementById("searchInput").value.toLowerCase();
-  const resultDiv = document.getElementById("result");
-
-  if (dizionario[input]) {
-    resultDiv.textContent = `Categoria: ${dizionario[input]}`;
-  } else {
-    resultDiv.textContent = "Nessuna corrispondenza trovata.";
-  }
-}
-
-// ==============================
-// POPOLA LISTA
-// ==============================
-function populateList() {
-  const list = document.getElementById("wordList");
-  list.innerHTML = "";
-
-  for (const [parola, categoria] of Object.entries(dizionario)) {
-    const li = document.createElement("li");
-    li.textContent = `${parola} → ${categoria}`;
-    list.appendChild(li);
-  }
-}
-
-// ==============================
-// PULSANTI NUOVA CATEGORIA/MEDICINALE
-// ==============================
-function aggiungiNuovaCategoria(tipo) {
-  // Ora apre direttamente Google Form
-  window.open("https://forms.gle/x2FanzzPzVdPveU57", "_blank");
-}
-
-// ==============================
-// MODAL (non più usato, lasciato per upgrade futuri)
-// ==============================
-function closeModal() {
-  document.getElementById("modal").classList.remove("active");
-}
-
-function saveModal() {
-  const parola = document.getElementById("modalParola").value.trim().toLowerCase();
-  const categoria = document.getElementById("modalCategoria").value.trim();
-
-  if (parola && categoria) {
-    if (modalMode === "add") {
-      dizionario[parola] = categoria;
-    } else if (modalMode === "edit" && editingKey) {
-      delete dizionario[editingKey];
-      dizionario[parola] = categoria;
+    // Mostra la sezione corrispondente
+    const target = document.getElementById(tabId);
+    if (target) {
+      target.classList.add("active");
     }
-    populateList();
-    closeModal();
+  });
+});
+
+// --- GESTIONE RICERCA ---
+function cerca() {
+  const input = document.getElementById("searchInput").value.toLowerCase();
+  const risultato = document.getElementById("risultato");
+
+  if (input.trim() === "") {
+    risultato.innerHTML = "<p>Inserisci una parola chiave per avviare la ricerca.</p>";
+    return;
   }
+
+  // Per ora mostriamo solo la parola cercata (puoi collegare il vero DB più avanti)
+  risultato.innerHTML = `<p>Hai cercato: <strong>${input}</strong></p>`;
 }
 
-// ==============================
-// INIT
-// ==============================
-window.onload = () => {
-  populateList();
-  showSection("search"); // Avvia dalla scheda ricerca
-};
+// --- MODAL ---
+const modal = document.getElementById("modal");
+const modalForm = document.getElementById("modalForm");
+let currentMode = null; // "prestazioni" o "medicinali"
+
+function aggiungiNuovaCategoria(tipo) {
+  currentMode = tipo;
+  document.getElementById("modalTitle").innerText =
+    tipo === "prestazioni" ? "Aggiungi Prestazione" : "Aggiungi Medicinale";
+  modal.style.display = "flex";
+}
+
+function chiudiModal() {
+  modal.style.display = "none";
+  modalForm.reset();
+}
+
+// Salvataggio voce
+modalForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const parola = document.getElementById("modalParola").value;
+  const sinonimi = document.getElementById("modalSinonimi").value;
+  const categoria = document.getElementById("modalCategoria").value;
+  const rimborso = document.getElementById("modalRimborso").value;
+
+  const nuovaRiga = `
+    <tr>
+      <td>${parola}</td>
+      <td>${sinonimi}</td>
+      <td>${categoria}</td>
+      <td>${rimborso}%</td>
+      <td><button onclick="this.closest('tr').remove()">🗑️ Elimina</button></td>
+    </tr>
+  `;
+
+  if (currentMode === "prestazioni") {
+    document.getElementById("corpoTabella").insertAdjacentHTML("beforeend", nuovaRiga);
+  } else if (currentMode === "medicinali") {
+    document.getElementById("corpoTabellaMedicinali").insertAdjacentHTML("beforeend", nuovaRiga);
+  }
+
+  chiudiModal();
+});
