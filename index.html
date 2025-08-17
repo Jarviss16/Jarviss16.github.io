@@ -10,27 +10,43 @@
   <header>
     <h1>Dizionario Sanitario</h1>
     <nav>
-      <button class="tab-btn active" data-tab="ricerca">Ricerca</button>
-      <button class="tab-btn" data-tab="lista">Lista parole</button>
+      <button class="tab-btn active" data-tab="ricerca">🔍 Ricerca</button>
+      <button class="tab-btn" data-tab="prestazioni">📋 Lista Prestazioni</button>
+      <button class="tab-btn" data-tab="medicinali">💊 Lista Medicinali</button>
     </nav>
   </header>
 
   <main>
-    <!-- Sezione Ricerca -->
+    <!-- Scheda Ricerca -->
     <section id="ricerca" class="tab-content active">
-      <h2>Ricerca prestazione</h2>
-      <input type="text" id="searchInput" placeholder="Inserisci una parola...">
-      <button onclick="cerca()">Cerca</button>
-      <div id="risultato"></div>
+      <h2>Ricerca Prestazione o Medicinale</h2>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Inserisci una parola chiave...">
+        <button id="searchBtn">Cerca</button>
+      </div>
+      <div id="result"></div>
     </section>
 
-    <!-- Sezione Lista parole -->
-    <section id="lista" class="tab-content">
-      <h2>Lista parole sanitarie</h2>
-      <ul id="listaParole"></ul>
+    <!-- Scheda Prestazioni -->
+    <section id="prestazioni" class="tab-content">
+      <h2>Lista Prestazioni</h2>
+      <div id="prestazioniList" class="card-list"></div>
+      <div class="add-btn-box">
+        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">➕ Aggiungi termine</a>
+      </div>
+    </section>
+
+    <!-- Scheda Medicinali -->
+    <section id="medicinali" class="tab-content">
+      <h2>Lista Medicinali</h2>
+      <div id="medicinaliList" class="card-list"></div>
+      <div class="add-btn-box">
+        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">➕ Aggiungi termine</a>
+      </div>
     </section>
   </main>
 
   <script src="script.js"></script>
 </body>
 </html>
+v
