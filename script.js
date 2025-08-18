@@ -1,4 +1,4 @@
-// Lista Prestazioni (AGGIUNTO campo "categoria")
+// Lista Prestazioni (aggiunto campo "categoria")
 const prestazioni = [
   {
     descrizione: "Visita specialistica",
@@ -14,7 +14,7 @@ const prestazioni = [
   }
 ];
 
-// Lista Medicinali (uguale a prima)
+// Lista Medicinali (invariata)
 const medicinali = [
   {
     nome: "Paracetamolo",
@@ -31,24 +31,26 @@ const medicinali = [
 // Rendering lista prestazioni
 const listaPrestazioni = document.getElementById("prestazioni-list");
 prestazioni.forEach(item => {
-  const li = document.createElement("li");
-  li.innerHTML = `
+  const card = document.createElement("div");
+  card.classList.add("card");
+  card.innerHTML = `
     <p><strong>Descrizione:</strong> ${item.descrizione}</p>
     <p><strong>Categoria:</strong> ${item.categoria}</p>
     <p><strong>Sinonimi:</strong> ${item.sinonimi.join(", ")}</p>
     <p><strong>Rimborso:</strong> ${item.rimborso}</p>
   `;
-  listaPrestazioni.appendChild(li);
+  listaPrestazioni.appendChild(card);
 });
 
 // Rendering lista medicinali
 const listaMedicinali = document.getElementById("medicinali-list");
 medicinali.forEach(item => {
-  const li = document.createElement("li");
-  li.innerHTML = `
+  const card = document.createElement("div");
+  card.classList.add("card");
+  card.innerHTML = `
     <p><strong>Nome:</strong> ${item.nome}</p>
     <p><strong>Sinonimi:</strong> ${item.sinonimi.join(", ")}</p>
     <p><strong>Rimborso:</strong> ${item.rimborso}</p>
   `;
-  listaMedicinali.appendChild(li);
+  listaMedicinali.appendChild(card);
 });
