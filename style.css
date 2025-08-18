@@ -1,5 +1,5 @@
 :root {
-  /* Light mode (invariato) */
+  /* Light mode (invariato - arancione) */
   --primary: #ff6b35;
   --primary-dark: #e55a00;
   --primary-light: #ff9e56;
@@ -11,19 +11,19 @@
   --header-bg: linear-gradient(135deg, #ff6b35, #e55a00);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  /* Dark mode - Palette blu elettrico */
-  --dark-bg-color: #0a0e17;         /* Sfondo principale (blu notte intenso) */
-  --dark-card-bg: #131a2d;          /* Card (blu scuro con tonalità elettrica) */
-  --dark-text-color: #e6f1ff;       /* Testo primario (blu chiaro brillante) */
-  --dark-text-light: #8ba3c7;       /* Testo secondario (blu-grigio) */
-  --dark-border-color: #253350;     /* Bordi (blu acciaio) */
-  --dark-header-bg: linear-gradient(135deg, #0066ff, #0040b3); /* Gradiente blu elettrico */
-  --dark-accent: #00a1ff;           /* Blu elettrico vibrante */
-  --dark-shadow: 0 4px 16px rgba(0, 26, 51, 0.5);
-  --dark-hover: rgba(0, 161, 255, 0.15);
+  /* Dark mode - Blu elettrico (nuova palette) */
+  --dark-bg-color: #0a0e1a;           /* Sfondo blu-nero intenso */
+  --dark-card-bg: #131a2d;            /* Card blu scuro */
+  --dark-text-color: #e0f2fe;         /* Testo blu chiaro */
+  --dark-text-light: #7dd3fc;         /* Testo secondario */
+  --dark-border-color: #1e3a8a;       /* Bordi blu oceano */
+  --dark-header-bg: linear-gradient(135deg, #0369a1, #1e40af); /* Gradiente blu elettrico */
+  --dark-accent: #60a5fa;             /* Blu elettrico principale */
+  --dark-accent-light: #93c5fd;       /* Blu chiaro per hover */
+  --dark-shadow: 0 4px 16px rgba(2, 132, 199, 0.15);
 }
 
-/* Elementi specifici dark mode */
+/* Elementi specifici dark mode - Solo modifiche colore */
 body.dark-mode {
   background-color: var(--dark-bg-color);
   color: var(--dark-text-color);
@@ -31,13 +31,30 @@ body.dark-mode {
 
 body.dark-mode header {
   background: var(--dark-header-bg);
-  border-bottom: 1px solid var(--dark-accent);
+  border-bottom: 1px solid var(--dark-border-color);
 }
 
-body.dark-mode .card {
-  background: var(--dark-card-bg);
-  border-left: 4px solid var(--dark-accent);
-  box-shadow: 0 4px 8px rgba(0, 10, 30, 0.6);
+body.dark-mode .theme-toggle {
+  background: rgba(96, 165, 250, 0.2);
+  color: var(--dark-accent);
+}
+
+body.dark-mode .theme-toggle:hover {
+  background: rgba(96, 165, 250, 0.3);
+}
+
+body.dark-mode nav button {
+  background: rgba(96, 165, 250, 0.1);
+}
+
+body.dark-mode nav button:hover {
+  background: rgba(96, 165, 250, 0.2);
+}
+
+body.dark-mode nav button.active {
+  background: var(--dark-accent);
+  color: #0a0e1a;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
 }
 
 body.dark-mode h2 {
@@ -48,46 +65,62 @@ body.dark-mode h2::after {
   background: var(--dark-accent);
 }
 
-body.dark-mode nav button.active {
-  background: var(--dark-accent);
-  color: #0a0e17;
-  box-shadow: 0 0 0 2px rgba(0, 161, 255, 0.5);
+body.dark-mode .search-container,
+body.dark-mode #result {
+  background: var(--dark-card-bg);
+  border-color: var(--dark-border-color);
+  box-shadow: var(--dark-shadow);
 }
 
-body.dark-mode .search-box button {
-  background: var(--dark-accent);
-  color: #0a0e17;
+body.dark-mode .search-box input {
+  background-color: var(--dark-card-bg);
+  color: var(--dark-text-color);
+  border-color: var(--dark-border-color);
 }
 
 body.dark-mode .search-box input:focus {
   border-color: var(--dark-accent);
-  box-shadow: 0 0 0 3px rgba(0, 161, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+}
+
+body.dark-mode .search-box button {
+  background: var(--dark-accent);
+  color: #0a0e1a;
+}
+
+body.dark-mode .search-box button:hover {
+  background: var(--dark-accent-light);
+}
+
+body.dark-mode .card {
+  background: var(--dark-card-bg);
+  border-left-color: var(--dark-accent);
+  border-color: var(--dark-border-color);
+}
+
+body.dark-mode .card h3 {
+  color: var(--dark-accent);
+}
+
+body.dark-mode .card p {
+  color: var(--dark-text-light);
 }
 
 body.dark-mode .add-btn {
   background: var(--dark-accent);
-  color: #0a0e17;
+  color: #0a0e1a;
+}
+
+body.dark-mode .add-btn:hover {
+  background: var(--dark-accent-light);
 }
 
 body.dark-mode .match-highlight {
-  background-color: rgba(0, 161, 255, 0.3);
+  background-color: rgba(96, 165, 250, 0.3);
+  color: var(--dark-accent-light);
+}
+
+body.dark-mode .search-type {
+  background: rgba(96, 165, 250, 0.2);
   color: var(--dark-accent);
-}
-
-/* Effetti speciali per il blu elettrico */
-body.dark-mode .card:hover {
-  box-shadow: 0 6px 12px rgba(0, 161, 255, 0.2);
-}
-
-body.dark-mode nav button:hover {
-  background: rgba(0, 161, 255, 0.2);
-}
-
-body.dark-mode .theme-toggle {
-  background: rgba(0, 161, 255, 0.2);
-  color: var(--dark-accent);
-}
-
-body.dark-mode .theme-toggle:hover {
-  background: rgba(0, 161, 255, 0.3);
 }
