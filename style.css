@@ -1,5 +1,5 @@
 :root {
-  /* Light mode (invariato - arancione) */
+  /* Light mode colors (invariato) */
   --primary: #ff6b35;
   --primary-dark: #e55a00;
   --primary-light: #ff9e56;
@@ -10,20 +10,21 @@
   --border-color: #e0e0e0;
   --header-bg: linear-gradient(135deg, #ff6b35, #e55a00);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-  /* Dark mode - Blu elettrico (nuova palette) */
-  --dark-bg-color: #0a0e1a;           /* Sfondo blu-nero intenso */
-  --dark-card-bg: #131a2d;            /* Card blu scuro */
-  --dark-text-color: #e0f2fe;         /* Testo blu chiaro */
-  --dark-text-light: #7dd3fc;         /* Testo secondario */
-  --dark-border-color: #1e3a8a;       /* Bordi blu oceano */
-  --dark-header-bg: linear-gradient(135deg, #0369a1, #1e40af); /* Gradiente blu elettrico */
-  --dark-accent: #60a5fa;             /* Blu elettrico principale */
-  --dark-accent-light: #93c5fd;       /* Blu chiaro per hover */
-  --dark-shadow: 0 4px 16px rgba(2, 132, 199, 0.15);
+  
+  /* Nuova Dark mode - Blu elettrico */
+  --dark-bg-color: #0a0e17;         /* Sfondo blu notte intenso */
+  --dark-card-bg: #121a2b;          /* Card blu scuro */
+  --dark-text-color: #e1e7ff;       /* Testo blu chiaro */
+  --dark-text-light: #8ca3d5;       /* Testo secondario */
+  --dark-border-color: #1e3a8a;     /* Bordi blu oceano */
+  --dark-header-bg: linear-gradient(135deg, #0c4a6e, #1e3a8a); /* Gradiente blu profondo */
+  --dark-accent: #3b82f6;           /* Blu elettrico */
+  --dark-accent-light: #60a5fa;     /* Blu elettrico chiaro */
+  --dark-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* Elementi specifici dark mode - Solo modifiche colore */
+/* Tutto il resto del CSS rimane INVARIATO fino a... */
+
 body.dark-mode {
   background-color: var(--dark-bg-color);
   color: var(--dark-text-color);
@@ -34,27 +35,19 @@ body.dark-mode header {
   border-bottom: 1px solid var(--dark-border-color);
 }
 
-body.dark-mode .theme-toggle {
-  background: rgba(96, 165, 250, 0.2);
-  color: var(--dark-accent);
-}
-
-body.dark-mode .theme-toggle:hover {
-  background: rgba(96, 165, 250, 0.3);
-}
-
 body.dark-mode nav button {
-  background: rgba(96, 165, 250, 0.1);
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--dark-text-color);
 }
 
 body.dark-mode nav button:hover {
-  background: rgba(96, 165, 250, 0.2);
+  background: rgba(59, 130, 246, 0.2);
 }
 
 body.dark-mode nav button.active {
   background: var(--dark-accent);
-  color: #0a0e1a;
-  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+  color: #0a0e17;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 body.dark-mode h2 {
@@ -68,8 +61,7 @@ body.dark-mode h2::after {
 body.dark-mode .search-container,
 body.dark-mode #result {
   background: var(--dark-card-bg);
-  border-color: var(--dark-border-color);
-  box-shadow: var(--dark-shadow);
+  border: 1px solid var(--dark-border-color);
 }
 
 body.dark-mode .search-box input {
@@ -80,12 +72,12 @@ body.dark-mode .search-box input {
 
 body.dark-mode .search-box input:focus {
   border-color: var(--dark-accent);
-  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 body.dark-mode .search-box button {
   background: var(--dark-accent);
-  color: #0a0e1a;
+  color: #0a0e17;
 }
 
 body.dark-mode .search-box button:hover {
@@ -94,8 +86,8 @@ body.dark-mode .search-box button:hover {
 
 body.dark-mode .card {
   background: var(--dark-card-bg);
-  border-left-color: var(--dark-accent);
-  border-color: var(--dark-border-color);
+  border-left: 4px solid var(--dark-accent);
+  border: 1px solid var(--dark-border-color);
 }
 
 body.dark-mode .card h3 {
@@ -108,7 +100,7 @@ body.dark-mode .card p {
 
 body.dark-mode .add-btn {
   background: var(--dark-accent);
-  color: #0a0e1a;
+  color: #0a0e17;
 }
 
 body.dark-mode .add-btn:hover {
@@ -116,11 +108,17 @@ body.dark-mode .add-btn:hover {
 }
 
 body.dark-mode .match-highlight {
-  background-color: rgba(96, 165, 250, 0.3);
+  background-color: rgba(59, 130, 246, 0.3);
   color: var(--dark-accent-light);
 }
 
-body.dark-mode .search-type {
-  background: rgba(96, 165, 250, 0.2);
+body.dark-mode .theme-toggle {
+  background: rgba(59, 130, 246, 0.2);
   color: var(--dark-accent);
 }
+
+body.dark-mode .theme-toggle:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Tutto il resto del CSS rimane INVARIATO */
