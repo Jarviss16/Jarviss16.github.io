@@ -29,66 +29,6 @@ const prestazioni = [
     descrizione: "Controllo specialistico per problemi della pelle",
     sinonimi: ["controllo pelle", "esame dermatologico"],
     rimborso: "65%"
-  },
-    {
-    nome: "Visita cardiologica",
-    descrizione: "Controllo medico specializzato sul cuore",
-    sinonimi: ["cardiologia", "check-up cuore"],
-    rimborso: "70%"
-  },
-  {
-    nome: "Radiografia",
-    descrizione: "Esame diagnostico con raggi X",
-    sinonimi: ["lastra", "rx"],
-    rimborso: "50%"
-  },
-  {
-    nome: "Analisi del sangue",
-    descrizione: "Prelievo e analisi di laboratorio",
-    sinonimi: ["esami sangue", "emocromo"],
-    rimborso: "60%"
-  },
-  {
-    nome: "Ecografia addominale",
-    descrizione: "Esame diagnostico non invasivo degli organi addominali",
-    sinonimi: ["eco addome", "ultrasuoni addome"],
-    rimborso: "55%"
-  },
-  {
-    nome: "Visita dermatologica",
-    descrizione: "Controllo specialistico per problemi della pelle",
-    sinonimi: ["controllo pelle", "esame dermatologico"],
-    rimborso: "65%"
-  },
-    {
-    nome: "Visita cardiologica",
-    descrizione: "Controllo medico specializzato sul cuore",
-    sinonimi: ["cardiologia", "check-up cuore"],
-    rimborso: "70%"
-  },
-  {
-    nome: "Radiografia",
-    descrizione: "Esame diagnostico con raggi X",
-    sinonimi: ["lastra", "rx"],
-    rimborso: "50%"
-  },
-  {
-    nome: "Analisi del sangue",
-    descrizione: "Prelievo e analisi di laboratorio",
-    sinonimi: ["esami sangue", "emocromo"],
-    rimborso: "60%"
-  },
-  {
-    nome: "Ecografia addominale",
-    descrizione: "Esame diagnostico non invasivo degli organi addominali",
-    sinonimi: ["eco addome", "ultrasuoni addome"],
-    rimborso: "55%"
-  },
-  {
-    nome: "Visita dermatologica",
-    descrizione: "Controllo specialistico per problemi della pelle",
-    sinonimi: ["controllo pelle", "esame dermatologico"],
-    rimborso: "65%"
   }
 ];
 
