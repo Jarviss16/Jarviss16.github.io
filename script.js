@@ -26,7 +26,6 @@ const prestazioni = [
   },
   {
     nome: "Visita dermatologica",
-    categoria: "Test",
     descrizione: "Controllo specialistico per problemi della pelle",
     sinonimi: ["controllo pelle", "esame dermatologico"],
     rimborso: "65%"
