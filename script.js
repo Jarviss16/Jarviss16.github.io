@@ -1,57 +1,123 @@
-// Dati iniziali aggiornati con nuove proprietà
+// Dati iniziali
 const prestazioni = [
   {
     nome: "Visita cardiologica",
     macro: "Cardiologia",
-    rimbMinore: "70%",
-    rimbMaggiore: "90%",
-    massimaleSpec: "€ 150",
-    massimaleGruppo: "€ 500",
+    rimb_sotto2: "70%",
+    rimb_sopra2: "50%",
+    massimale_specifico: "€ 120",
+    massimale_gruppo: "€ 500",
     categoria: "Specialistica",
     sinonimi: ["cardiologia", "check-up cuore"],
-    preventivo: "No",
-    opt: "Sì",
-    visitaIniziale: "Sì",
-    visitaFinale: "Sì",
-    valutazioneSanitaria: "Sì",
-    descrizione: "Controllo medico specializzato sul cuore"
+    preventivo_prescrizione: "Prescrizione obbligatoria",
+    opt: "No",
+    visita_iniziale: "Sì",
+    visita_finale: "No",
+    valutazione_sanitaria: "Sì",
+    descrizione: "Controllo medico specializzato sul cuore",
+    rimborso: "Sì, con ticket (70%)"
   },
   {
     nome: "Radiografia",
     macro: "Diagnostica per immagini",
-    rimbMinore: "50%",
-    rimbMaggiore: "80%",
-    massimaleSpec: "€ 100",
-    massimaleGruppo: "€ 300",
+    rimb_sotto2: "50%",
+    rimb_sopra2: "30%",
+    massimale_specifico: "€ 80",
+    massimale_gruppo: "€ 300",
     categoria: "Diagnostica",
     sinonimi: ["lastra", "rx"],
-    preventivo: "Sì",
+    preventivo_prescrizione: "Prescrizione obbligatoria",
     opt: "Sì",
-    visitaIniziale: "No",
-    visitaFinale: "No",
-    valutazioneSanitaria: "No",
-    descrizione: "Esame diagnostico con raggi X"
+    visita_iniziale: "No",
+    visita_finale: "No",
+    valutazione_sanitaria: "No",
+    descrizione: "Esame diagnostico con raggi X",
+    rimborso: "Sì, con ticket (50%)"
   },
   {
     nome: "Analisi del sangue",
     macro: "Laboratorio",
-    rimbMinore: "60%",
-    rimbMaggiore: "85%",
-    massimaleSpec: "€ 80",
-    massimaleGruppo: "€ 250",
-    categoria: "Laboratorio",
+    rimb_sotto2: "60%",
+    rimb_sopra2: "40%",
+    massimale_specifico: "€ 50",
+    massimale_gruppo: "€ 200",
+    categoria: "Esami",
     sinonimi: ["esami sangue", "emocromo"],
-    preventivo: "No",
+    preventivo_prescrizione: "Prescrizione consigliata",
     opt: "Sì",
-    visitaIniziale: "No",
-    visitaFinale: "No",
-    valutazioneSanitaria: "Sì",
-    descrizione: "Prelievo e analisi di laboratorio"
+    visita_iniziale: "No",
+    visita_finale: "No",
+    valutazione_sanitaria: "No",
+    descrizione: "Prelievo e analisi di laboratorio",
+    rimborso: "Sì, con ticket (60%)"
+  },
+  {
+    nome: "Ecografia addominale",
+    macro: "Diagnostica per immagini",
+    rimb_sotto2: "55%",
+    rimb_sopra2: "35%",
+    massimale_specifico: "€ 90",
+    massimale_gruppo: "€ 350",
+    categoria: "Diagnostica",
+    sinonimi: ["eco addome", "ultrasuoni addome"],
+    preventivo_prescrizione: "Prescrizione obbligatoria",
+    opt: "Sì",
+    visita_iniziale: "No",
+    visita_finale: "No",
+    valutazione_sanitaria: "No",
+    descrizione: "Esame diagnostico non invasivo degli organi addominali",
+    rimborso: "Sì, con ticket (55%)"
+  },
+  {
+    nome: "Visita dermatologica",
+    macro: "Dermatologia",
+    rimb_sotto2: "65%",
+    rimb_sopra2: "45%",
+    massimale_specifico: "€ 100",
+    massimale_gruppo: "€ 400",
+    categoria: "Specialistica",
+    sinonimi: ["controllo pelle", "esame dermatologico"],
+    preventivo_prescrizione: "Prescrizione obbligatoria",
+    opt: "No",
+    visita_iniziale: "Sì",
+    visita_finale: "No",
+    valutazione_sanitaria: "Sì",
+    descrizione: "Controllo specialistico per problemi della pelle",
+    rimborso: "Sì, con ticket (65%)"
   }
 ];
 
 const medicinali = [
-  // ... (invariato)
+  {
+    nome: "Tachipirina",
+    descrizione: "Farmaco antipiretico e antidolorifico",
+    sinonimi: ["paracetamolo"],
+    rimborso: "40%"
+  },
+  {
+    nome: "Ibuprofene",
+    descrizione: "Farmaco antinfiammatorio non steroideo",
+    sinonimi: ["brufen"],
+    rimborso: "30%"
+  },
+  {
+    nome: "Amoxicillina",
+    descrizione: "Farmaco antibiotico per infezioni batteriche",
+    sinonimi: ["antibiotico", "Zimox"],
+    rimborso: "20%"
+  },
+  {
+    nome: "Aspirina",
+    descrizione: "Farmaco antinfiammatorio e antipiretico",
+    sinonimi: ["acido acetilsalicilico"],
+    rimborso: "25%"
+  },
+  {
+    nome: "Augmentin",
+    descrizione: "Antibiotico ad ampio spettro",
+    sinonimi: ["amoxicillina e acido clavulanico"],
+    rimborso: "35%"
+  }
 ];
 
 // Elementi DOM
@@ -61,11 +127,6 @@ const searchBtn = document.getElementById('searchBtn');
 const resultDiv = document.getElementById('result');
 const tabs = document.querySelectorAll('.tab-btn');
 const contents = document.querySelectorAll('.tab-content');
-
-// Modal
-const detailModal = document.getElementById('detailModal');
-const modalBody = document.getElementById('modalBody');
-const closeModalBtn = document.querySelector('.close-modal');
 
 // Dark mode
 function initTheme() {
@@ -154,13 +215,45 @@ function performSearch() {
   
   let html = '';
   results.forEach(item => {
+    const highlightedNome = highlightMatch(item.nome, query);
+    const highlightedDesc = highlightMatch(item.descrizione, query);
+    const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
+    
     if (item.type === 'prestazione') {
-      html += getPrestazioneFullHTML(item, query);
-    } else {
-      const highlightedNome = highlightMatch(item.nome, query);
-      const highlightedDesc = highlightMatch(item.descrizione, query);
-      const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
+      const highlightedMacro = highlightMatch(item.macro, query);
+      const highlightedRimbSotto2 = highlightMatch(item.rimb_sotto2, query);
+      const highlightedRimbSopra2 = highlightMatch(item.rimb_sopra2, query);
+      const highlightedMassimaleSpec = highlightMatch(item.massimale_specifico, query);
+      const highlightedMassimaleGruppo = highlightMatch(item.massimale_gruppo, query);
+      const highlightedCat = highlightMatch(item.categoria, query);
+      const highlightedPrevPrescr = highlightMatch(item.preventivo_prescrizione, query);
+      const highlightedOpt = highlightMatch(item.opt, query);
+      const highlightedVisitaIniz = highlightMatch(item.visita_iniziale, query);
+      const highlightedVisitaFin = highlightMatch(item.visita_finale, query);
+      const highlightedValutazione = highlightMatch(item.valutazione_sanitaria, query);
       
+      html += `
+        <div class="card detailed-card">
+          <h3>${highlightedNome} <span class="search-type">(Prestazione)</span></h3>
+          <div class="detail-grid">
+            <div><strong>MACRO:</strong> ${highlightedMacro}</div>
+            <div><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${highlightedRimbSotto2}</div>
+            <div><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${highlightedRimbSopra2}</div>
+            <div><strong>MASSIMALE SPECIFICO:</strong> ${highlightedMassimaleSpec}</div>
+            <div><strong>MASSIMALE GRUPPO:</strong> ${highlightedMassimaleGruppo}</div>
+            <div><strong>CATEGORIA:</strong> ${highlightedCat}</div>
+            <div><strong>SINONIMI:</strong> ${highlightedSyn}</div>
+            <div><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${highlightedPrevPrescr}</div>
+            <div><strong>OPT:</strong> ${highlightedOpt}</div>
+            <div><strong>VISITA INIZIALE:</strong> ${highlightedVisitaIniz}</div>
+            <div><strong>VISITA FINALE:</strong> ${highlightedVisitaFin}</div>
+            <div><strong>VALUTAZIONE SANITARIA:</strong> ${highlightedValutazione}</div>
+          </div>
+          <p><strong>Descrizione:</strong> ${highlightedDesc}</p>
+          <p><strong>Rimborso:</strong> ${item.rimborso}</p>
+        </div>
+      `;
+    } else {
       html += `
         <div class="card">
           <h3>${highlightedNome} <span class="search-type">(Medicinale)</span></h3>
@@ -174,44 +267,18 @@ function performSearch() {
   resultDiv.innerHTML = html;
 }
 
-// Genera HTML completo per prestazione
-function getPrestazioneFullHTML(p, query = null) {
-  const highlight = (text) => {
-    if (!query || !text) return text;
-    return highlightMatch(text, query);
-  };
-  
-  return `
-    <div class="card">
-      <h3>${highlight(p.nome)} <span class="search-type">(Prestazione)</span></h3>
-      <p><strong>MACRO:</strong> ${highlight(p.macro)}</p>
-      <p><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${highlight(p.rimbMinore)}</p>
-      <p><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${highlight(p.rimbMaggiore)}</p>
-      <p><strong>MASSIMALE SPECIFICO:</strong> ${highlight(p.massimaleSpec)}</p>
-      <p><strong>MASSIMALE GRUPPO:</strong> ${highlight(p.massimaleGruppo)}</p>
-      <p><strong>CATEGORIA:</strong> ${highlight(p.categoria)}</p>
-      <p><strong>SINONIMI:</strong> ${highlight(p.sinonimi.join(", "))}</p>
-      <p><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${highlight(p.preventivo)}</p>
-      <p><strong>OPT:</strong> ${highlight(p.opt)}</p>
-      <p><strong>VISITA INIZIALE:</strong> ${highlight(p.visitaIniziale)}</p>
-      <p><strong>VISITA FINALE:</strong> ${highlight(p.visitaFinale)}</p>
-      <p><strong>VALUTAZIONE SANITARIA:</strong> ${highlight(p.valutazioneSanitaria)}</p>
-    </div>
-  `;
-}
-
 // Render liste
 function renderLists() {
   const prestazioniList = document.getElementById('prestazioniList');
   const medicinaliList = document.getElementById('medicinaliList');
   
-  prestazioniList.innerHTML = prestazioni.map((p, index) => `
-    <div class="card prestazione-card" data-id="${index}">
+  prestazioniList.innerHTML = prestazioni.map(p => `
+    <div class="card" data-id="${p.nome}">
       <h3>${p.nome}</h3>
       <p><strong>Categoria:</strong> ${p.categoria}</p>
       <p><strong>Descrizione:</strong> ${p.descrizione}</p>
       <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
-      <p><strong>Rimborso:</strong> ${p.rimbMinore} (minore) | ${p.rimbMaggiore} (maggiore)</p>
+      <p><strong>Rimborso:</strong> ${p.rimborso}</p>
     </div>
   `).join('');
   
@@ -224,38 +291,58 @@ function renderLists() {
     </div>
   `).join('');
   
-  // Aggiungi event listener per le card delle prestazioni
-  document.querySelectorAll('.prestazione-card').forEach(card => {
-    card.addEventListener('click', function() {
-      const id = this.getAttribute('data-id');
-      openDetailModal(prestazioni[id]);
+  // Event listener per aprire il dettaglio
+  document.querySelectorAll('#prestazioniList .card').forEach(card => {
+    card.addEventListener('click', () => {
+      const nome = card.dataset.id;
+      const prestazione = prestazioni.find(p => p.nome === nome);
+      showPrestazioneDetail(prestazione);
     });
   });
 }
 
-// Modal functions
-function openDetailModal(prestazione) {
-  modalBody.innerHTML = `
-    <h2>${prestazione.nome}</h2>
-    <p><strong>MACRO:</strong> ${prestazione.macro}</p>
-    <p><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${prestazione.rimbMinore}</p>
-    <p><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${prestazione.rimbMaggiore}</p>
-    <p><strong>MASSIMALE SPECIFICO:</strong> ${prestazione.massimaleSpec}</p>
-    <p><strong>MASSIMALE GRUPPO:</strong> ${prestazione.massimaleGruppo}</p>
-    <p><strong>CATEGORIA:</strong> ${prestazione.categoria}</p>
-    <p><strong>SINONIMI:</strong> ${prestazione.sinonimi.join(", ")}</p>
-    <p><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${prestazione.preventivo}</p>
-    <p><strong>OPT:</strong> ${prestazione.opt}</p>
-    <p><strong>VISITA INIZIALE:</strong> ${prestazione.visitaIniziale}</p>
-    <p><strong>VISITA FINALE:</strong> ${prestazione.visitaFinale}</p>
-    <p><strong>VALUTAZIONE SANITARIA:</strong> ${prestazione.valutazioneSanitaria}</p>
-    <p><strong>Descrizione:</strong> ${prestazione.descrizione}</p>
+// Mostra dettaglio prestazione in modal
+function showPrestazioneDetail(prestazione) {
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay';
+  modal.innerHTML = `
+    <div class="modal">
+      <button class="close-modal">&times;</button>
+      <div class="modal-content">
+        <h3>${prestazione.nome}</h3>
+        <div class="detail-grid">
+          <div><strong>MACRO:</strong> ${prestazione.macro}</div>
+          <div><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${prestazione.rimb_sotto2}</div>
+          <div><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${prestazione.rimb_sopra2}</div>
+          <div><strong>MASSIMALE SPECIFICO:</strong> ${prestazione.massimale_specifico}</div>
+          <div><strong>MASSIMALE GRUPPO:</strong> ${prestazione.massimale_gruppo}</div>
+          <div><strong>CATEGORIA:</strong> ${prestazione.categoria}</div>
+          <div><strong>SINONIMI:</strong> ${prestazione.sinonimi.join(", ")}</div>
+          <div><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${prestazione.preventivo_prescrizione}</div>
+          <div><strong>OPT:</strong> ${prestazione.opt}</div>
+          <div><strong>VISITA INIZIALE:</strong> ${prestazione.visita_iniziale}</div>
+          <div><strong>VISITA FINALE:</strong> ${prestazione.visita_finale}</div>
+          <div><strong>VALUTAZIONE SANITARIA:</strong> ${prestazione.valutazione_sanitaria}</div>
+        </div>
+        <p><strong>Descrizione:</strong> ${prestazione.descrizione}</p>
+        <p><strong>Rimborso:</strong> ${prestazione.rimborso}</p>
+      </div>
+    </div>
   `;
-  detailModal.style.display = 'block';
-}
-
-function closeModal() {
-  detailModal.style.display = 'none';
+  
+  document.body.appendChild(modal);
+  
+  // Chiudi modal al click sulla X
+  modal.querySelector('.close-modal').addEventListener('click', () => {
+    modal.remove();
+  });
+  
+  // Chiudi modal al click fuori dal contenuto
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
 }
 
 // Navigazione tra schede
@@ -275,13 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   renderLists();
   setupTabs();
-  
   themeToggle.addEventListener('click', toggleTheme);
   searchBtn.addEventListener('click', performSearch);
   searchInput.addEventListener('keyup', (e) => e.key === 'Enter' && performSearch());
-  
-  closeModalBtn.addEventListener('click', closeModal);
-  window.addEventListener('click', (e) => {
-    if (e.target === detailModal) closeModal();
-  });
 });
