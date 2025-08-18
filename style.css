@@ -1,5 +1,5 @@
 :root {
-  /* Light mode colors (invariato) */
+  /* Light mode colors */
   --primary: #ff6b35;
   --primary-dark: #e55a00;
   --primary-light: #ff9e56;
@@ -397,6 +397,75 @@ body.dark-mode .match-highlight {
   color: var(--dark-accent-light);
 }
 
+/* Vista compatta */
+.card.compact-view {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card.compact-view:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+/* Vista dettagliata */
+.card.full-details {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.details-grid > div {
+  padding: 10px;
+  background: rgba(255, 107, 53, 0.05);
+  border-radius: 8px;
+}
+
+body.dark-mode .details-grid > div {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.search-type {
+  font-size: 0.9rem;
+  font-weight: normal;
+  background: rgba(255, 107, 53, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+body.dark-mode .search-type {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Stile per il tasto torna su */
+.back-to-results {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-align: center;
+  width: max-content;
+}
+
+body.dark-mode .back-to-results {
+  background: var(--dark-accent);
+}
+
+.back-to-results i {
+  margin-right: 8px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .search-box {
@@ -422,5 +491,9 @@ body.dark-mode .match-highlight {
   
   h2 {
     font-size: 1.5rem;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 }
