@@ -1,5 +1,5 @@
 // Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
-const APP_PASSWORD = "Fondazioneatm2025";
+const APP_PASSWORD = "Medico123";
 
 // Elementi per il login
 const loginScreen = document.getElementById('login-screen');
@@ -58,7 +58,7 @@ function checkAuth() {
       }
     });
     
-    // Listener per il pulsante di login
+    // Listener per il pulsante de login
     loginBtn.addEventListener('click', login);
   }
 }
@@ -278,8 +278,6 @@ function initApp() {
       
       if (item.type === 'prestazione') {
         const highlightedMacro = highlightMatch(item.macro, query);
-        const highlightedRimbSotto2 = highlightMatch(item.rimb_sotto2, query);
-        const highlightedRimbSopra2 = highlightMatch(item.rimb_sopra2, query);
         const highlightedMassimaleSpec = highlightMatch(item.massimale_specifico, query);
         const highlightedMassimaleGruppo = highlightMatch(item.massimale_gruppo, query);
         const highlightedCat = highlightMatch(item.categoria, query);
@@ -294,8 +292,6 @@ function initApp() {
             <h3>${highlightedNome} <span class="search-type">(Prestazione)</span></h3>
             <div class="detail-grid">
               <div><strong>MACRO:</strong> ${highlightedMacro}</div>
-              <div><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${highlightedRimbSotto2}</div>
-              <div><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${highlightedRimbSopra2}</div>
               <div><strong>MASSIMALE SPECIFICO:</strong> ${highlightedMassimaleSpec}</div>
               <div><strong>MASSIMALE GRUPPO:</strong> ${highlightedMassimaleGruppo}</div>
               <div><strong>CATEGORIA:</strong> ${highlightedCat}</div>
@@ -369,8 +365,6 @@ function initApp() {
           <h3>${prestazione.nome}</h3>
           <div class="detail-grid">
             <div><strong>MACRO:</strong> ${prestazione.macro}</div>
-            <div><strong>%RIMB &lt;2 | &lt;4 - 1°I:</strong> ${prestazione.rimb_sotto2}</div>
-            <div><strong>%RIMB &gt;2 | &gt;4 - 1°I:</strong> ${prestazione.rimb_sopra2}</div>
             <div><strong>MASSIMALE SPECIFICO:</strong> ${prestazione.massimale_specifico}</div>
             <div><strong>MASSIMALE GRUPPO:</strong> ${prestazione.massimale_gruppo}</div>
             <div><strong>CATEGORIA:</strong> ${prestazione.categoria}</div>
