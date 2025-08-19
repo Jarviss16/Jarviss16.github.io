@@ -3,89 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dizionario Sanitario con Dark Mode Migliorata</title>
+  <title>Dizionario Sanitario - Accesso</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <div class="header-top">
-      <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
-      <button id="themeToggle" class="theme-toggle">
-        <i class="fas fa-moon"></i>
-      </button>
-    </div>
-    
-    <nav>
-      <button class="tab-btn active" data-tab="ricerca">
-        <i class="fas fa-search"></i> Ricerca
-      </button>
-      <button class="tab-btn" data-tab="prestazioni">
-        <i class="fas fa-stethoscope"></i> Prestazioni
-      </button>
-      <button class="tab-btn" data-tab="medicinali">
-        <i class="fas fa-pills"></i> Medicinali
-      </button>
-    </nav>
-  </header>
-
-  <main>
-    <!-- Scheda Ricerca -->
-    <section id="ricerca" class="tab-content active">
-      <div class="search-container">
-        <h2><i class="fas fa-search"></i> Cerca nel Dizionario</h2>
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Inserisci una prestazione o medicinale..." autocomplete="off">
-          <button id="searchBtn">
-            <i class="fas fa-search"></i> Cerca
-          </button>
+  <div id="login-screen">
+    <div class="login-container">
+      <h1><i class="fas fa-lock"></i> Accesso Riservato</h1>
+      <div class="login-form">
+        <div class="input-group">
+          <label for="password"><i class="fas fa-key"></i> Password:</label>
+          <input type="password" id="password" placeholder="Inserisci la password">
         </div>
+        <button id="login-btn">Accedi</button>
+        <p id="login-error" class="error-message"></p>
+      </div>
+      <div class="login-footer">
+        <p>Accesso consentito solo a personale autorizzato</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="content" style="display:none;">
+    <header>
+      <div class="header-top">
+        <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
+        <button id="themeToggle" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
       </div>
       
-      <div id="result">
-        <div class="no-results">
-          <i class="fas fa-search fa-3x"></i>
-          <h3>Inizia la tua ricerca</h3>
-          <p>Digita un termine nel campo di ricerca per trovare prestazioni o medicinali</p>
+      <nav>
+        <button class="tab-btn active" data-tab="ricerca">
+          <i class="fas fa-search"></i> Ricerca
+        </button>
+        <button class="tab-btn" data-tab="prestazioni">
+          <i class="fas fa-stethoscope"></i> Prestazioni
+        </button>
+        <button class="tab-btn" data-tab="medicinali">
+          <i class="fas fa-pills"></i> Medicinali
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Scheda Ricerca -->
+      <section id="ricerca" class="tab-content active">
+        <div class="search-container">
+          <h2><i class="fas fa-search"></i> Cerca nel Dizionario</h2>
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Inserisci una prestazione o medicinale..." autocomplete="off">
+            <button id="searchBtn">
+              <i class="fas fa-search"></i> Cerca
+            </button>
+          </div>
         </div>
-      </div>
-      
-      <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-          <i class="fas fa-plus-circle"></i> Aggiungi termine
-        </a>
-      </div>
-    </section>
+        
+        <div id="result" class="search-results">
+          <div class="no-results">
+            <i class="fas fa-search fa-3x"></i>
+            <h3>Inizia la tua ricerca</h3>
+            <p>Digita un termine nel campo di ricerca per trovare prestazioni o medicinali</p>
+          </div>
+        </div>
+        
+        <div class="add-btn-box">
+          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+            <i class="fas fa-plus-circle"></i> Aggiungi termine
+          </a>
+        </div>
+      </section>
 
-    <!-- Scheda Prestazioni -->
-    <section id="prestazioni" class="tab-content">
-      <h2><i class="fas fa-stethoscope"></i> Lista Prestazioni</h2>
-      <div id="prestazioniList" class="card-list"></div>
-      <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-          <i class="fas fa-plus-circle"></i> Aggiungi termine
-        </a>
-      </div>
-    </section>
+      <!-- Scheda Prestazioni -->
+      <section id="prestazioni" class="tab-content">
+        <h2><i class="fas fa-stethoscope"></i> Lista Prestazioni</h2>
+        <div id="prestazioniList" class="card-list"></div>
+        <div class="add-btn-box">
+          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+            <i class="fas fa-plus-circle"></i> Aggiungi termine
+          </a>
+        </div>
+      </section>
 
-    <!-- Scheda Medicinali -->
-    <section id="medicinali" class="tab-content">
-      <h2><i class="fas fa-pills"></i> Lista Medicinali</h2>
-      <div id="medicinaliList" class="card-list"></div>
-      <div class="add-btn-box">
-        <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-          <i class="fas fa-plus-circle"></i> Aggiungi termine
-        </a>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal Dettagli Prestazione -->
-  <div id="detailModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal"><i class="fas fa-times-circle"></i></span>
-      <div id="modalBody"></div>
-    </div>
+      <!-- Scheda Medicinali -->
+      <section id="medicinali" class="tab-content">
+        <h2><i class="fas fa-pills"></i> Lista Medicinali</h2>
+        <div id="medicinaliList" class="card-list"></div>
+        <div class="add-btn-box">
+          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
+            <i class="fas fa-plus-circle"></i> Aggiungi termine
+          </a>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script src="script.js"></script>
