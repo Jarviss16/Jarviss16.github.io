@@ -70,8 +70,6 @@ function initApp() {
     {
       nome: "Visita cardiologica",
       macro: "Cardiologia",
-      rimb_sotto2: "70%",
-      rimb_sopra2: "50%",
       massimale_specifico: "€ 120",
       massimale_gruppo: "€ 500",
       categoria: "Specialistica",
@@ -87,8 +85,6 @@ function initApp() {
     {
       nome: "Radiografia",
       macro: "Diagnostica per immagini",
-      rimb_sotto2: "50%",
-      rimb_sopra2: "30%",
       massimale_specifico: "€ 80",
       massimale_gruppo: "€ 300",
       categoria: "Diagnostica",
@@ -104,8 +100,6 @@ function initApp() {
     {
       nome: "Analisi del sangue",
       macro: "Laboratorio",
-      rimb_sotto2: "60%",
-      rimb_sopra2: "40%",
       massimale_specifico: "€ 50",
       massimale_gruppo: "€ 200",
       categoria: "Esami",
@@ -121,8 +115,6 @@ function initApp() {
     {
       nome: "Ecografia addominale",
       macro: "Diagnostica per immagini",
-      rimb_sotto2: "55%",
-      rimb_sopra2: "35%",
       massimale_specifico: "€ 90",
       massimale_gruppo: "€ 350",
       categoria: "Diagnostica",
@@ -138,8 +130,6 @@ function initApp() {
     {
       nome: "Visita dermatologica",
       macro: "Dermatologia",
-      rimb_sotto2: "65%",
-      rimb_sopra2: "45%",
       massimale_specifico: "€ 100",
       massimale_gruppo: "€ 400",
       categoria: "Specialistica",
