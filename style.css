@@ -657,3 +657,32 @@ body.dark-mode .detail-grid > div {
     padding: 30px 20px;
   }
 }
+/* Stile per il badge COD */
+.cod-badge {
+  background-color: var(--primary);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-left: 10px;
+}
+
+body.dark-mode .cod-badge {
+  background-color: var(--dark-accent);
+  color: #0c1120;
+}
+
+/* Assicurati che il badge sia visibile anche nei risultati di ricerca */
+.search-type + .cod-badge {
+  margin-left: 5px;
+}
+
+/* Migliora il layout delle cards con il nuovo campo COD */
+#prestazioniList .card p:first-of-type {
+  font-weight: bold;
+  color: var(--primary);
+}
+
+body.dark-mode #prestazioniList .card p:first-of-type {
+  color: var(--dark-accent);
+}
