@@ -1,5 +1,5 @@
 // Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
-const APP_PASSWORD = "Medico123";
+const APP_PASSWORD = "Fondazioneatm2025";
 
 // Elementi per il login
 const loginScreen = document.getElementById('login-screen');
