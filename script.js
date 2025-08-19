@@ -1,5 +1,5 @@
 // Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
-const APP_PASSWORD = "Fondazioneatm2025";
+const APP_PASSWORD = "Medico123";
 
 // Elementi per il login
 const loginScreen = document.getElementById('login-screen');
@@ -68,7 +68,7 @@ function initApp() {
   // Dati iniziali
   const prestazioni = [
     {
-      cod: "VCD001", // Aggiunto campo COD
+      cod: "VCD001",
       nome: "Visita cardiologica",
       macro: "Cardiologia",
       massimale_specifico: "€ 120",
@@ -84,7 +84,7 @@ function initApp() {
       rimborso: "Sì, con ticket (70%)"
     },
     {
-      cod: "RDG002", // Aggiunto campo COD
+      cod: "RDG002",
       nome: "Radiografia",
       macro: "Diagnostica per immagini",
       massimale_specifico: "€ 80",
@@ -100,7 +100,7 @@ function initApp() {
       rimborso: "Sì, con ticket (50%)"
     },
     {
-      cod: "ANS003", // Aggiunto campo COD
+      cod: "ANS003",
       nome: "Analisi del sangue",
       macro: "Laboratorio",
       massimale_specifico: "€ 50",
@@ -116,7 +116,7 @@ function initApp() {
       rimborso: "Sì, con ticket (60%)"
     },
     {
-      cod: "ECA004", // Aggiunto campo COD
+      cod: "ECA004",
       nome: "Ecografia addominale",
       macro: "Diagnostica per immagini",
       massimale_specifico: "€ 90",
@@ -132,7 +132,7 @@ function initApp() {
       rimborso: "Sì, con ticket (55%)"
     },
     {
-      cod: "VDM005", // Aggiunto campo COD
+      cod: "VDM005",
       nome: "Visita dermatologica",
       macro: "Dermatologia",
       massimale_specifico: "€ 100",
@@ -260,7 +260,7 @@ function initApp() {
     const results = allItems.filter(item => {
       if (fuzzySearch(query, item.nome)) return true;
       if (fuzzySearch(query, item.descrizione)) return true;
-      if (item.cod && fuzzySearch(query, item.cod)) return true; // Aggiunta ricerca per COD
+      if (item.cod && fuzzySearch(query, item.cod)) return true;
       if (item.categoria && fuzzySearch(query, item.categoria)) return true;
       return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
     });
@@ -283,7 +283,7 @@ function initApp() {
       const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
       
       if (item.type === 'prestazione') {
-        const highlightedCod = highlightMatch(item.cod, query); // Aggiunto highlight per COD
+        const highlightedCod = highlightMatch(item.cod, query);
         const highlightedMacro = highlightMatch(item.macro, query);
         const highlightedMassimaleSpec = highlightMatch(item.massimale_specifico, query);
         const highlightedMassimaleGruppo = highlightMatch(item.massimale_gruppo, query);
@@ -299,7 +299,6 @@ function initApp() {
             <h3>${highlightedNome} <span class="search-type">(Prestazione)</span> <span class="cod-badge">${highlightedCod}</span></h3>
             <div class="detail-grid">
               <div><strong>COD:</strong> ${highlightedCod}</div>
-              <div><strong>MACRO:</strong> ${highlightedMacro}</div>
               <div><strong>MASSIMALE SPECIFICO:</strong> ${highlightedMassimaleSpec}</div>
               <div><strong>MASSIMALE GRUPPO:</strong> ${highlightedMassimaleGruppo}</div>
               <div><strong>CATEGORIA:</strong> ${highlightedCat}</div>
@@ -310,7 +309,6 @@ function initApp() {
               <div><strong>VISITA FINALE:</strong> ${highlightedVisitaFin}</div>
               <div><strong>VALUTAZIONE SANITARIA:</strong> ${highlightedValutazione}</div>
             </div>
-            <p><strong>Descrizione:</strong> ${highlightedDesc}</p>
             <p><strong>Rimborso:</strong> ${item.rimborso}</p>
           </div>
         `;
@@ -338,7 +336,6 @@ function initApp() {
         <h3>${p.nome} <span class="cod-badge">${p.cod}</span></h3>
         <p><strong>COD:</strong> ${p.cod}</p>
         <p><strong>Categoria:</strong> ${p.categoria}</p>
-        <p><strong>Descrizione:</strong> ${p.descrizione}</p>
         <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
         <p><strong>Rimborso:</strong> ${p.rimborso}</p>
       </div>
@@ -374,7 +371,6 @@ function initApp() {
           <h3>${prestazione.nome} <span class="cod-badge">${prestazione.cod}</span></h3>
           <div class="detail-grid">
             <div><strong>COD:</strong> ${prestazione.cod}</div>
-            <div><strong>MACRO:</strong> ${prestazione.macro}</div>
             <div><strong>MASSIMALE SPECIFICO:</strong> ${prestazione.massimale_specifico}</div>
             <div><strong>MASSIMALE GRUPPO:</strong> ${prestazione.massimale_gruppo}</div>
             <div><strong>CATEGORIA:</strong> ${prestazione.categoria}</div>
@@ -385,7 +381,6 @@ function initApp() {
             <div><strong>VISITA FINALE:</strong> ${prestazione.visita_finale}</div>
             <div><strong>VALUTAZIONE SANITARIA:</strong> ${prestazione.valutazione_sanitaria}</div>
           </div>
-          <p><strong>Descrizione:</strong> ${prestazione.descrizione}</p>
           <p><strong>Rimborso:</strong> ${prestazione.rimborso}</p>
         </div>
       </div>
