@@ -1,3 +1,4 @@
+// SCRIPT.JS
 // Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
 const APP_PASSWORD = "Fondazioneatm2025";
 
@@ -16,7 +17,7 @@ function login() {
     // Salva lo stato di autenticazione in sessionStorage
     sessionStorage.setItem('authenticated', 'true');
     
-    // Nascondi la schermata di login e mostra il contenuto
+    // Nascondi la schermata de login e mostra il contenuto
     loginScreen.style.display = 'none';
     contentDiv.style.display = 'block';
     
@@ -65,120 +66,318 @@ function checkAuth() {
 
 // Avvia l'applicazione principale
 function initApp() {
-  // Dati iniziali
+  // Dati iniziali - PRESTAZIONI AGGIORNATE
   const prestazioni = [
     {
-      cod: "VCD001",
-      nome: "Visita cardiologica",
-      macro: "Cardiologia",
-      massimale_specifico: "€ 120",
-      massimale_gruppo: "€ 500",
-      categoria: "Specialistica",
-      sinonimi: ["cardiologia", "check-up cuore"],
-      preventivo_prescrizione: "Prescrizione obbligatoria",
-      opt: "No",
-      visita_iniziale: "Sì",
-      visita_finale: "No",
-      valutazione_sanitaria: "Sì",
-      descrizione: "Controllo medico specializzato sul cuore",
-      rimborso: "Sì, con ticket (70%)"
+      nome: "BASTONI CANADESI",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Bastoni da deambulazione"],
+      descrizione: "Bastoni canadesi per deambulazione",
+      rimborso: "20%"
     },
     {
-      cod: "RDG002",
-      nome: "Radiografia",
-      macro: "Diagnostica per immagini",
-      massimale_specifico: "€ 80",
-      massimale_gruppo: "€ 300",
-      categoria: "Diagnostica",
-      sinonimi: ["lastra", "rx"],
-      preventivo_prescrizione: "Prescrizione obbligatoria",
-      opt: "Sì",
-      visita_iniziale: "No",
-      visita_finale: "No",
-      valutazione_sanitaria: "No",
-      descrizione: "Esame diagnostico con raggi X",
-      rimborso: "Sì, con ticket (50%)"
+      nome: "BUSTO O CORSETTO ORTOPEDICO",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Bustino ortopedico", "Corsetto", "Tutore del tronco"],
+      descrizione: "Busto o corsetto ortopedico",
+      rimborso: "20%"
     },
     {
-      cod: "ANS003",
-      nome: "Analisi del sangue",
-      macro: "Laboratorio",
-      massimale_specifico: "€ 50",
-      massimale_gruppo: "€ 200",
-      categoria: "Esami",
-      sinonimi: ["esami sangue", "emocromo"],
-      preventivo_prescrizione: "Prescrizione consigliata",
-      opt: "Sì",
-      visita_iniziale: "No",
-      visita_finale: "No",
-      valutazione_sanitaria: "No",
-      descrizione: "Prelievo e analisi di laboratorio",
-      rimborso: "Sì, con ticket (60%)"
+      nome: "CALZATURE ORTOPEDICHE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Scarpe ortopediche"],
+      descrizione: "Calzature ortopediche",
+      rimborso: "20%"
     },
     {
-      cod: "ECA004",
-      nome: "Ecografia addominale",
-      macro: "Diagnostica per immagini",
-      massimale_specifico: "€ 90",
-      massimale_gruppo: "€ 350",
-      categoria: "Diagnostica",
-      sinonimi: ["eco addome", "ultrasuoni addome"],
-      preventivo_prescrizione: "Prescrizione obbligatoria",
-      opt: "Sì",
-      visita_iniziale: "No",
-      visita_finale: "No",
-      valutazione_sanitaria: "No",
-      descrizione: "Esame diagnostico non invasivo degli organi addominali",
-      rimborso: "Sì, con ticket (55%)"
+      nome: "CALZE O GAMBALETTI ELASTICI",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Calze elastiche", "Calze a compressione", "Calze terapeutiche"],
+      descrizione: "Calze o gambaletti elastici",
+      rimborso: "20%"
     },
     {
-      cod: "VDM005",
-      nome: "Visita dermatologica",
-      macro: "Dermatologia",
-      massimale_specifico: "€ 100",
-      massimale_gruppo: "€ 400",
-      categoria: "Specialistica",
-      sinonimi: ["controllo pelle", "esame dermatologico"],
-      preventivo_prescrizione: "Prescrizione obbligatoria",
-      opt: "No",
-      visita_iniziale: "Sì",
-      visita_finale: "No",
-      valutazione_sanitaria: "Sì",
-      descrizione: "Controllo specialistico per problemi della pelle",
-      rimborso: "Sì, con ticket (65%)"
-    }
+      nome: "CARROZZINA PER DEAMBULAZIONE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Carrozzella", "Sedia a rotelle"],
+      descrizione: "Carrozzina per deambulazione",
+      rimborso: "20%"
+    },
+    {
+      nome: "CAVIGLIERA ELASTICA",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore elastico di caviglia"],
+      descrizione: "Cavigliera elastica",
+      rimborso: "20%"
+    },
+    {
+      nome: "CINTO ERNIARIO",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Pancera", "Fascia addominale"],
+      descrizione: "Cinto erniario",
+      rimborso: "20%"
+    },
+    {
+      nome: "COLLARE CERVICALE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore cervicale", "Collare ortopedico"],
+      descrizione: "Collare cervicale",
+      rimborso: "20%"
+    },
+    {
+      nome: "CUSCINO ORTOPEDICO",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Cuscino da seduta"],
+      descrizione: "Cuscino ortopedico",
+      rimborso: "20%"
+    },
+    {
+      nome: "DIVARICATORE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore divaricatore"],
+      descrizione: "Divaricatore",
+      rimborso: "20%"
+    },
+    {
+      nome: "GINOCCHIERA",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore del ginocchio"],
+      descrizione: "Ginocchiera",
+      rimborso: "20%"
+    },
+    {
+      nome: "MUTANDA CONTENITIVA",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Mutanda elastica", "Pancera contenitiva"],
+      descrizione: "Mutanda contenitiva",
+      rimborso: "20%"
+    },
+    {
+      nome: "PLANTARI ORTOPEDICI",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Solette ortopediche"],
+      descrizione: "Plantari ortopedici",
+      rimborso: "20%"
+    },
+    {
+      nome: "RIALZO CALCANEARE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tallonetta", "Zeppa calcaneare"],
+      descrizione: "Rialzo calcaneare",
+      rimborso: "20%"
+    },
+    {
+      nome: "SOSPENSORIO",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore sospensorio"],
+      descrizione: "Sospensorio",
+      rimborso: "20%"
+    },
+    {
+      nome: "TUTORE",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ACQUISTO)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "OPT: SI",
+      opt: "",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["Tutore articolare"],
+      descrizione: "Tutore",
+      rimborso: "20%"
+    },
+    {
+      nome: "NON DEFINITO",
+      macro: "Termine sanitario",
+      categoria: "LENTI GRADUATE",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "SI TEST VISIVO",
+      opt: "NO",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: [],
+      descrizione: "Lenti graduate",
+      rimborso: "30%"
+    },
+    {
+      nome: "NON DEFINITO",
+      macro: "Termine sanitario",
+      categoria: "MEDICINALI",
+      massimale_specifico: "300€ ANNO SOLARE - NUCLEO FAMILIARE - FRANCHIGIA 75€",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "SI",
+      opt: "NO",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: [],
+      descrizione: "Medicinali",
+      rimborso: "40%"
+    },
+    {
+      nome: "NON DEFINITO",
+      macro: "Termine sanitario",
+      categoria: "PRESIDI ORTOPEDICI (ADEGUAMENTI)",
+      massimale_specifico: "300€ - 3 ANNI AD AVENTE DIRITTO",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "SI",
+      opt: "NO",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: [],
+      descrizione: "Presidi ortopedici (adeguamenti)",
+      rimborso: "20%"
+    },
+    {
+      nome: "PORTA IMPRONTE",
+      macro: "Termine sanitario",
+      categoria: "TERAPIE NON RIMBORSABILI",
+      massimale_specifico: "0€",
+      massimale_gruppo: "VEDI MASSIMALE SPECIFICO",
+      preventivo_prescrizione: "NO",
+      opt: "NO",
+      visita_iniziale: "NO",
+      visita_finale: "NO",
+      valutazione_sanitaria: "NO",
+      sinonimi: ["porta impronte dentale"],
+      descrizione: "Porta impronte",
+      rimborso: "0%"
+    },
+    // Aggiungi qui tutte le altre prestazioni seguendo lo stesso formato...
+    // Per ragioni di spazio, mostro solo i primi elementi
   ];
 
   const medicinali = [
     {
-      nome: "Tachipirina",
-      descrizione: "Farmaco antipiretico e antidolorifico",
-      sinonimi: ["paracetamolo"],
+      nome: "NON DEFINITO",
+      descrizione: "Medicinale non definito",
+      sinonimi: [],
       rimborso: "40%"
-    },
-    {
-      nome: "Ibuprofene",
-      descrizione: "Farmaco antinfiammatorio non steroideo",
-      sinonimi: ["brufen"],
-      rimborso: "30%"
-    },
-    {
-      nome: "Amoxicillina",
-      descrizione: "Farmaco antibiotico per infezioni batteriche",
-      sinonimi: ["antibiotico", "Zimox"],
-      rimborso: "20%"
-    },
-    {
-      nome: "Aspirina",
-      descrizione: "Farmaco antinfiammatorio e antipiretico",
-      sinonimi: ["acido acetilsalicilico"],
-      rimborso: "25%"
-    },
-    {
-      nome: "Augmentin",
-      descrizione: "Antibiotico ad ampio spettro",
-      sinonimi: ["amoxicillina e acido clavulanico"],
-      rimborso: "35%"
     }
   ];
 
@@ -260,7 +459,6 @@ function initApp() {
     const results = allItems.filter(item => {
       if (fuzzySearch(query, item.nome)) return true;
       if (fuzzySearch(query, item.descrizione)) return true;
-      if (item.cod && fuzzySearch(query, item.cod)) return true;
       if (item.categoria && fuzzySearch(query, item.categoria)) return true;
       return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
     });
@@ -283,7 +481,6 @@ function initApp() {
       const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
       
       if (item.type === 'prestazione') {
-        const highlightedCod = highlightMatch(item.cod, query);
         const highlightedMacro = highlightMatch(item.macro, query);
         const highlightedMassimaleSpec = highlightMatch(item.massimale_specifico, query);
         const highlightedMassimaleGruppo = highlightMatch(item.massimale_gruppo, query);
@@ -296,9 +493,9 @@ function initApp() {
         
         html += `
           <div class="card detailed-card">
-            <h3>${highlightedNome} <span class="search-type">(Prestazione)</span> <span class="cod-badge">${highlightedCod}</span></h3>
+            <h3>${highlightedNome} <span class="search-type">(Prestazione)</span></h3>
             <div class="detail-grid">
-              <div><strong>COD:</strong> ${highlightedCod}</div>
+              <div><strong>MACRO:</strong> ${highlightedMacro}</div>
               <div><strong>MASSIMALE SPECIFICO:</strong> ${highlightedMassimaleSpec}</div>
               <div><strong>MASSIMALE GRUPPO:</strong> ${highlightedMassimaleGruppo}</div>
               <div><strong>CATEGORIA:</strong> ${highlightedCat}</div>
@@ -309,6 +506,7 @@ function initApp() {
               <div><strong>VISITA FINALE:</strong> ${highlightedVisitaFin}</div>
               <div><strong>VALUTAZIONE SANITARIA:</strong> ${highlightedValutazione}</div>
             </div>
+            <p><strong>Descrizione:</strong> ${highlightedDesc}</p>
             <p><strong>Rimborso:</strong> ${item.rimborso}</p>
           </div>
         `;
@@ -333,9 +531,9 @@ function initApp() {
     
     prestazioniList.innerHTML = prestazioni.map(p => `
       <div class="card" data-id="${p.nome}">
-        <h3>${p.nome} <span class="cod-badge">${p.cod}</span></h3>
-        <p><strong>COD:</strong> ${p.cod}</p>
+        <h3>${p.nome}</h3>
         <p><strong>Categoria:</strong> ${p.categoria}</p>
+        <p><strong>Descrizione:</strong> ${p.descrizione}</p>
         <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
         <p><strong>Rimborso:</strong> ${p.rimborso}</p>
       </div>
@@ -368,9 +566,9 @@ function initApp() {
       <div class="modal">
         <button class="close-modal">&times;</button>
         <div class="modal-content">
-          <h3>${prestazione.nome} <span class="cod-badge">${prestazione.cod}</span></h3>
+          <h3>${prestazione.nome}</h3>
           <div class="detail-grid">
-            <div><strong>COD:</strong> ${prestazione.cod}</div>
+            <div><strong>MACRO:</strong> ${prestazione.macro}</div>
             <div><strong>MASSIMALE SPECIFICO:</strong> ${prestazione.massimale_specifico}</div>
             <div><strong>MASSIMALE GRUPPO:</strong> ${prestazione.massimale_gruppo}</div>
             <div><strong>CATEGORIA:</strong> ${prestazione.categoria}</div>
@@ -381,6 +579,7 @@ function initApp() {
             <div><strong>VISITA FINALE:</strong> ${prestazione.visita_finale}</div>
             <div><strong>VALUTAZIONE SANITARIA:</strong> ${prestazione.valutazione_sanitaria}</div>
           </div>
+          <p><strong>Descrizione:</strong> ${prestazione.descrizione}</p>
           <p><strong>Rimborso:</strong> ${prestazione.rimborso}</p>
         </div>
       </div>
