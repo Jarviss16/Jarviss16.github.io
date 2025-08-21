@@ -1,4 +1,4 @@
-// Password di accesso (Fondazioneatm2025)
+// Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
 const APP_PASSWORD = "Fondazioneatm2025";
 
 // Elementi per il login
