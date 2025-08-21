@@ -35,8 +35,7 @@ function normalizePrestazione(obj) {
 function initApp() {
     // --- Inserisci qui TUTTO il contenuto di rawPrestazioni come array di oggetti valido (virgole tra oggetti!) ---
     // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
-    const rawPrestazioni = 
-[  
+    const rawPrestazioni =[  
 {
     "COD": "5. PORT",
     "TIPOLOGIA": "Termine sanitario",
