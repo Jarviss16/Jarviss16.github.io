@@ -33,8 +33,10 @@ function normalizePrestazione(obj) {
 
 // Avvia l'applicazione principale
 function initApp() {
-    // LISTA PRESTAZIONI (solo alcuni esempi)
-    const rawPrestazioni = [  
+    // --- Inserisci qui TUTTO il contenuto di rawPrestazioni come array di oggetti valido (virgole tra oggetti!) ---
+    // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
+    const rawPrestazioni = 
+[  
 {
     "COD": "5. PORT",
     "TIPOLOGIA": "Termine sanitario",
@@ -1493,8 +1495,6 @@ function initApp() {
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": ""
   }
-]
-[
   {
     "COD": "2.4.INCH",
     "TIPOLOGIA": "Termine sanitario",
@@ -2499,8 +2499,6 @@ function initApp() {
       rimborso: "40%"
     }
   ];
-
-
     // Normalizza tutte le proprietà
     const prestazioni = rawPrestazioni.map(normalizePrestazione);
 
@@ -2538,12 +2536,10 @@ function initApp() {
 
     function performSearch() {
         const query = searchInput.value.trim();
-        
         if (!query) {
             renderPrestazioni(prestazioni);
             return;
         }
-
         const results = prestazioni.filter(item => {
             if (fuzzySearch(query, item.termine)) return true;
             if (item.cod && fuzzySearch(query, item.cod)) return true;
@@ -2554,7 +2550,6 @@ function initApp() {
             }
             return false;
         });
-
         renderPrestazioni(results, query);
     }
 
@@ -2569,7 +2564,6 @@ function initApp() {
             `;
             return;
         }
-
         let html = '';
         prestazioniToRender.forEach(item => {
             const highlightedCod = query ? highlightMatch(item.cod, query) : item.cod;
@@ -2612,7 +2606,7 @@ function initApp() {
 
     // Inizializza l'app
     renderPrestazioni(prestazioni);
-    
+
     // Aggiungi event listeners
     searchBtn.addEventListener('click', performSearch);
     searchInput.addEventListener('keyup', (e) => {
