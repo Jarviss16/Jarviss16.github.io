@@ -11,29 +11,19 @@ const loginError = document.getElementById('login-error');
 // Funzione di login
 function login() {
   const password = passwordInput.value.trim();
-  
+
   if (password === APP_PASSWORD) {
-    // Salva lo stato di autenticazione in sessionStorage
     sessionStorage.setItem('authenticated', 'true');
-    
-    // Nascondi la schermata di login e mostra il contenuto
     loginScreen.style.display = 'none';
     contentDiv.style.display = 'block';
-    
-    // Avvia l'applicazione
     initApp();
   } else {
-    // Mostra messaggio di errore
     loginError.textContent = "Password errata. Riprova.";
     loginError.style.display = 'block';
-    
-    // Animazione di errore
     passwordInput.style.animation = 'shake 0.5s';
     setTimeout(() => {
       passwordInput.style.animation = '';
     }, 500);
-    
-    // Svuota il campo e rimetti il focus
     passwordInput.value = '';
     passwordInput.focus();
   }
@@ -42,32 +32,62 @@ function login() {
 // Controlla se l'utente è già autenticato
 function checkAuth() {
   const isAuthenticated = sessionStorage.getItem('authenticated') === 'true';
-  
+
   if (isAuthenticated) {
     loginScreen.style.display = 'none';
     contentDiv.style.display = 'block';
     initApp();
   } else {
-    // Focus sul campo password
     passwordInput.focus();
-    
-    // Abilita login con Enter
     passwordInput.addEventListener('keyup', (e) => {
       if (e.key === 'Enter') {
         login();
       }
     });
-    
-    // Listener per il pulsante de login
     loginBtn.addEventListener('click', login);
   }
 }
 
+// Normalizza proprietà oggetto prestazioni in minuscolo e underscore
+function normalizePrestazione(obj) {
+  const norm = {};
+  Object.entries(obj).forEach(([k, v]) => {
+    let key = k.trim().toLowerCase().replace(/[\s\-.]+/g, "_").replace(/_+/g, "_");
+    if (key === "preventivo_–_prescrizione" || key === "preventivo_-_prescrizione" || key === "preventivo___prescrizione") key = "preventivo_prescrizione";
+    if (key === "massimale__specifico") key = "massimale_specifico";
+    if (key === "massimale__gruppo") key = "massimale_gruppo";
+    if (key === "valutazione_sanitaria_") key = "valutazione_sanitaria";
+    if (key === "opt:") key = "opt";
+    if (key === "visita_iniziale:") key = "visita_iniziale";
+    if (key === "visita_finale:") key = "visita_finale";
+    if (key === "massimale_gruppo:") key = "massimale_gruppo";
+    if (key === "rimborso:") key = "rimborso";
+    if (key === "massimale_specifico:") key = "massimale_specifico";
+    if (key === "categoria:") key = "categoria";
+    if (key === "sinonimi" && typeof v === 'string') {
+      v = v.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    norm[key] = v == null ? '' : v;
+  });
+  [
+    'cod','tipologia','termine','categoria','rimborso','massimale_specifico','massimale_gruppo',
+    'preventivo_prescrizione','opt','visita_iniziale','visita_finale',
+    'valutazione_sanitaria','sinonimi'
+  ].forEach(key => {
+    if (!norm[key]) {
+      norm[key] = (key === 'sinonimi') ? [] : '';
+    }
+  });
+  return norm;
+}
+
 // Avvia l'applicazione principale
 function initApp() {
-  // Dati iniziali
-  const prestazioni = [
-{
+  // LUNGA LISTA ORIGINALE DELLE PRESTAZIONI (presa dal tuo script.js!)
+  const rawPrestazioni = [
+    // INIZIO LISTA OGGETTI (copia incollata dalla tua versione! Per motivi di spazio, qui trovi una porzione rappresentativa della lista completa, ma il file reale la contiene tutta)
+    {
+
 COD: "5. PORT",
 TIPOLOGIA: "Termine sanitario",
 TERMINE: "BASTONI CANADESI",
@@ -2514,6 +2534,9 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
 }
   ];
 
+  // Normalizza tutte le proprietà
+  const prestazioni = rawPrestazioni.map(normalizePrestazione);
+
   const medicinali = [
     {
       nome: "Tachipirina",
@@ -2535,7 +2558,6 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
   function initTheme() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
       document.body.classList.add('dark-mode');
       themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
@@ -2579,7 +2601,6 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  // Ricerca principale
   function performSearch() {
     const query = searchInput.value.trim();
     if (!query) {
@@ -2592,20 +2613,23 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
       `;
       return;
     }
-    
+
     const allItems = [
       ...prestazioni.map(item => ({ ...item, type: 'prestazione' })),
       ...medicinali.map(item => ({ ...item, type: 'medicinale' }))
     ];
-    
+
     const results = allItems.filter(item => {
       if (fuzzySearch(query, item.termine || item.nome)) return true;
       if (item.cod && fuzzySearch(query, item.cod)) return true;
       if (item.tipologia && fuzzySearch(query, item.tipologia)) return true;
       if (item.categoria && fuzzySearch(query, item.categoria)) return true;
-      return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
+      if (item.sinonimi && Array.isArray(item.sinonimi)) {
+        return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
+      }
+      return false;
     });
-    
+
     if (results.length === 0) {
       resultDiv.innerHTML = `
         <div class="no-results">
@@ -2616,7 +2640,7 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
       `;
       return;
     }
-    
+
     let html = '';
     results.forEach(item => {
       if (item.type === 'prestazione') {
@@ -2632,8 +2656,8 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
         const highlightedVisitaIniz = highlightMatch(item.visita_iniziale, query);
         const highlightedVisitaFin = highlightMatch(item.visita_finale, query);
         const highlightedValutazione = highlightMatch(item.valutazione_sanitaria, query);
-        const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
-        
+        const highlightedSyn = (item.sinonimi||[]).map(s => highlightMatch(s, query)).join(", ");
+
         html += `
           <div class="card detailed-card">
             <h3>${highlightedTermine} <span class="search-type">(Prestazione)</span></h3>
@@ -2657,9 +2681,9 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
       } else {
         const highlightedNome = highlightMatch(item.nome, query);
         const highlightedDesc = highlightMatch(item.descrizione, query);
-        const highlightedSyn = item.sinonimi.map(s => highlightMatch(s, query)).join(", ");
+        const highlightedSyn = (item.sinonimi||[]).map(s => highlightMatch(s, query)).join(", ");
         const highlightedRimborso = highlightMatch(item.rimborso, query);
-        
+
         html += `
           <div class="card">
             <h3>${highlightedNome} <span class="search-type">(Medicinale)</span></h3>
@@ -2673,11 +2697,10 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
     resultDiv.innerHTML = html;
   }
 
-  // Render liste
   function renderLists() {
     const prestazioniList = document.getElementById('prestazioniList');
     const medicinaliList = document.getElementById('medicinaliList');
-    
+
     prestazioniList.innerHTML = prestazioni.map(p => `
       <div class="card" data-id="${p.cod}">
         <h3>${p.termine}</h3>
@@ -2694,21 +2717,20 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
           <div><strong>VISITA INIZIALE:</strong> ${p.visita_iniziale}</div>
           <div><strong>VISITA FINALE:</strong> ${p.visita_finale}</div>
           <div><strong>VALUTAZIONE SANITARIA:</strong> ${p.valutazione_sanitaria}</div>
-          <div><strong>SINONIMI:</strong> ${p.sinonimi.join(", ")}</div>
+          <div><strong>SINONIMI:</strong> ${(p.sinonimi||[]).join(", ")}</div>
         </div>
       </div>
     `).join('');
-    
+
     medicinaliList.innerHTML = medicinali.map(m => `
       <div class="card">
         <h3>${m.nome}</h3>
         <p><strong>Descrizione:</strong> ${m.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
+        <p><strong>Sinonimi:</strong> ${(m.sinonimi||[]).join(", ")}</p>
         <p><strong>Rimborso:</strong> ${m.rimborso}</p>
       </div>
     `).join('');
-    
-    // Event listener per aprire il dettaglio
+
     document.querySelectorAll('#prestazioniList .card').forEach(card => {
       card.addEventListener('click', () => {
         const cod = card.dataset.id;
@@ -2718,7 +2740,6 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
     });
   }
 
-  // Mostra dettaglio prestazione in modal
   function showPrestazioneDetail(prestazione) {
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
@@ -2740,20 +2761,18 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
             <div><strong>VISITA INIZIALE:</strong> ${prestazione.visita_iniziale}</div>
             <div><strong>VISITA FINALE:</strong> ${prestazione.visita_finale}</div>
             <div><strong>VALUTAZIONE SANITARIA:</strong> ${prestazione.valutazione_sanitaria}</div>
-            <div><strong>SINONIMI:</strong> ${prestazione.sinonimi.join(", ")}</div>
+            <div><strong>SINONIMI:</strong> ${(prestazione.sinonimi||[]).join(", ")}</div>
           </div>
         </div>
       </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
-    // Chiudi modal al click sulla X
+
     modal.querySelector('.close-modal').addEventListener('click', () => {
       modal.remove();
     });
-    
-    // Chiudi modal al click fuori dal contenuto
+
     modal.addEventListener('click', (e) => {
       if (e.target === modal) {
         modal.remove();
@@ -2761,7 +2780,6 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
     });
   }
 
-  // Navigazione tra schede
   function setupTabs() {
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -2773,7 +2791,6 @@ SINONIMI: "REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIAN
     });
   }
 
-  // Inizializzazione dell'app
   initTheme();
   renderLists();
   setupTabs();
