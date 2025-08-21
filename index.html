@@ -1,87 +1,66 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dizionario Sanitario</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Prestazioni Sanitarie</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="content">
-    <header>
-      <div class="header-top">
-        <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
-        <button id="themeToggle" class="theme-toggle">
-          <i class="fas fa-moon"></i>
-        </button>
-      </div>
-      
-      <nav>
-        <button class="tab-btn active" data-tab="ricerca">
-          <i class="fas fa-search"></i> Ricerca
-        </button>
-        <button class="tab-btn" data-tab="prestazioni">
-          <i class="fas fa-stethoscope"></i> Prestazioni
-        </button>
-        <button class="tab-btn" data-tab="medicinali">
-          <i class="fas fa-pills"></i> Medicinali
-        </button>
-      </nav>
-    </header>
-
-    <main>
-      <!-- Scheda Ricerca -->
-      <section id="ricerca" class="tab-content active">
-        <div class="search-container">
-          <h2><i class="fas fa-search"></i> Cerca nel Dizionario</h2>
-          <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Inserisci una prestazione o medicinale..." autocomplete="off">
-            <button id="searchBtn">
-              <i class="fas fa-search"></i> Cerca
-            </button>
-          </div>
-        </div>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <button id="themeToggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <h1><i class="fas fa-heartbeat"></i> Database Prestazioni Sanitarie</h1>
+            </div>
+            
+            <nav>
+                <button class="tab-btn active" data-tab="prestazioni">
+                    <i class="fas fa-procedures"></i> Prestazioni
+                </button>
+                <button class="tab-btn" data-tab="medicinali">
+                    <i class="fas fa-pills"></i> Medicinali
+                </button>
+                <button class="tab-btn" data-tab="ricerca">
+                    <i class="fas fa-search"></i> Ricerca
+                </button>
+            </nav>
+        </header>
         
-        <div id="result" class="search-results">
-          <div class="no-results">
-            <i class="fas fa-search fa-3x"></i>
-            <h3>Inizia la tua ricerca</h3>
-            <p>Digita un termine nel campo di ricerca per trovare prestazioni o medicinali</p>
-          </div>
-        </div>
+        <main>
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Cerca prestazioni o medicinali...">
+                    <button id="searchBtn">
+                        <i class="fas fa-search"></i> Cerca
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tab-content active" id="prestazioni">
+                <h2>Elenco Prestazioni</h2>
+                <div id="prestazioniList" class="card-list"></div>
+            </div>
+            
+            <div class="tab-content" id="medicinali">
+                <h2>Elenco Medicinali</h2>
+                <div id="medicinaliList" class="card-list"></div>
+            </div>
+            
+            <div class="tab-content" id="ricerca">
+                <h2>Risultati Ricerca</h2>
+                <div id="result"></div>
+            </div>
+        </main>
         
-        <div class="add-btn-box">
-          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-            <i class="fas fa-plus-circle"></i> Aggiungi termine
-          </a>
-        </div>
-      </section>
+        <footer>
+            <p>© 2023 Database Prestazioni Sanitarie - Tutti i diritti riservati</p>
+        </footer>
+    </div>
 
-      <!-- Scheda Prestazioni -->
-      <section id="prestazioni" class="tab-content">
-        <h2><i class="fas fa-stethoscope"></i> Lista Prestazioni</h2>
-        <div id="prestazioniList" class="card-list"></div>
-        <div class="add-btn-box">
-          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-            <i class="fas fa-plus-circle"></i> Aggiungi termine
-          </a>
-        </div>
-      </section>
-
-      <!-- Scheda Medicinali -->
-      <section id="medicinali" class="tab-content">
-        <h2><i class="fas fa-pills"></i> Lista Medicinali</h2>
-        <div id="medicinaliList" class="card-list"></div>
-        <div class="add-btn-box">
-          <a href="https://forms.gle/x2FanzzPzVdPveU57" target="_blank" class="add-btn">
-            <i class="fas fa-plus-circle"></i> Aggiungi termine
-          </a>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
