@@ -1,53 +1,4 @@
-
-// Password di accesso (MODIFICA QUESTA CON LA TUA PASSWORD)
-const APP_PASSWORD = "Fondazioneatm2025";
-
-// Elementi per il login
-const loginScreen = document.getElementById('login-screen');
-const contentDiv = document.getElementById('content');
-const passwordInput = document.getElementById('password');
-const loginBtn = document.getElementById('login-btn');
-const loginError = document.getElementById('login-error');
-
-// Funzione di login
-function login() {
-  const password = passwordInput.value.trim();
-
-  if (password === APP_PASSWORD) {
-    sessionStorage.setItem('authenticated', 'true');
-    loginScreen.style.display = 'none';
-    contentDiv.style.display = 'block';
-    initApp();
-  } else {
-    loginError.textContent = "Password errata. Riprova.";
-    loginError.style.display = 'block';
-    passwordInput.style.animation = 'shake 0.5s';
-    setTimeout(() => {
-      passwordInput.style.animation = '';
-    }, 500);
-    passwordInput.value = '';
-    passwordInput.focus();
-  }
-}
-
-// Controlla se l'utente è già autenticato
-function checkAuth() {
-  const isAuthenticated = sessionStorage.getItem('authenticated') === 'true';
-
-  if (isAuthenticated) {
-    loginScreen.style.display = 'none';
-    contentDiv.style.display = 'block';
-    initApp();
-  } else {
-    passwordInput.focus();
-    passwordInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') {
-        login();
-      }
-    });
-    loginBtn.addEventListener('click', login);
-  }
-}
+// --- RIMOSSO IL SISTEMA DI LOGIN ---
 
 // Normalizza proprietà oggetto prestazioni in minuscolo e underscore
 function normalizePrestazione(obj) {
@@ -81,7 +32,6 @@ function normalizePrestazione(obj) {
   });
   return norm;
 }
-
 // Avvia l'applicazione principale
 function initApp() {
   // LUNGA LISTA ORIGINALE DELLE PRESTAZIONI (presa dal tuo script.js!)
@@ -2553,7 +2503,7 @@ function initApp() {
     }
   ];
 
-  // Elementi DOM
+// Elementi DOM
   const themeToggle = document.getElementById('themeToggle');
   const searchInput = document.getElementById('searchInput');
   const searchBtn = document.getElementById('searchBtn');
@@ -2806,6 +2756,5 @@ function initApp() {
   searchInput.addEventListener('keyup', (e) => e.key === 'Enter' && performSearch());
 }
 
-// Controlla l'autenticazione al caricamento della pagina
-document.addEventListener('DOMContentLoaded', checkAuth);
-
+// Avvia direttamente l'applicazione principale al caricamento della pagina
+document.addEventListener('DOMContentLoaded', initApp);
