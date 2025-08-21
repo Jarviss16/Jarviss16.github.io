@@ -1,5 +1,3 @@
-// --- RIMOSSO IL SISTEMA DI LOGIN ---
-
 // Normalizza proprietà oggetto prestazioni in minuscolo e underscore
 function normalizePrestazione(obj) {
   const norm = {};
@@ -32,13 +30,14 @@ function normalizePrestazione(obj) {
   });
   return norm;
 }
+
 // Avvia l'applicazione principale
 function initApp() {
-  // LUNGA LISTA ORIGINALE DELLE PRESTAZIONI (presa dal tuo script.js!)
+  // LUNGA LISTA ORIGINALE DELLE PRESTAZIONI
+  // SOSTITUISCI QUESTO ARRAY CON LA TUA LISTA COMPLETA
   const rawPrestazioni = [
-    // INIZIO LISTA OGGETTI (copia incollata dalla tua versione! Per motivi di spazio, qui trovi una porzione rappresentativa della lista completa, ma il file reale la contiene tutta)
-[
-  {
+[  
+{
     "COD": "5. PORT",
     "TIPOLOGIA": "Termine sanitario",
     "TERMINE": "BASTONI CANADESI",
@@ -2534,8 +2533,9 @@ function initApp() {
 
   // Funzioni di ricerca
   function fuzzySearch(query, text) {
+    if (!text) return false;
     query = query.toLowerCase();
-    text = text.toLowerCase();
+    text = text.toString().toLowerCase();
     if (!query) return false;
     if (text.includes(query)) return true;
     let index = 0;
@@ -2549,9 +2549,9 @@ function initApp() {
   }
 
   function highlightMatch(text, query) {
-    if (!query) return text;
+    if (!query || !text) return text;
     const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-    return text.replace(regex, '<span class="match-highlight">$1</span>');
+    return text.toString().replace(regex, '<span class="match-highlight">$1</span>');
   }
 
   function escapeRegExp(string) {
@@ -2740,21 +2740,35 @@ function initApp() {
   function setupTabs() {
     tabs.forEach(btn => {
       btn.addEventListener('click', () => {
+        // Rimuovi la classe active da tutti i tab e contenuti
         tabs.forEach(b => b.classList.remove('active'));
         contents.forEach(c => c.classList.remove('active'));
+        
+        // Aggiungi la classe active al tab cliccato
         btn.classList.add('active');
-        document.getElementById(btn.dataset.tab).classList.add('active');
+        
+        // Mostra il contenuto correlato al tab
+        const tabId = btn.getAttribute('data-tab');
+        document.getElementById(tabId).classList.add('active');
       });
     });
   }
 
+  // Inizializza l'app
   initTheme();
   renderLists();
   setupTabs();
+  
+  // Aggiungi event listeners
   themeToggle.addEventListener('click', toggleTheme);
   searchBtn.addEventListener('click', performSearch);
-  searchInput.addEventListener('keyup', (e) => e.key === 'Enter' && performSearch());
+  searchInput.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  });
 }
 
-// Avvia direttamente l'applicazione principale al caricamento della pagina
+// Avvia l'applicazione al caricamento della pagina
 document.addEventListener('DOMContentLoaded', initApp);
+
