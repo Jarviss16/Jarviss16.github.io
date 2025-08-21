@@ -2654,40 +2654,50 @@ SINONIMI:
     resultDiv.innerHTML = html;
   }
 
-  // Render liste
   function renderLists() {
-    const prestazioniList = document.getElementById('prestazioniList');
-    const medicinaliList = document.getElementById('medicinaliList');
-    
-    prestazioniList.innerHTML = prestazioni.map(p => `
-      <div class="card" data-id="${p.nome}">
-        <h3>${p.nome}</h3>
-        <p><strong>Categoria:</strong> ${p.categoria}</p>
-        <p><strong>Descrizione:</strong> ${p.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${p.sinonimi.join(", ")}</p>
-        <p><strong>Rimborso:</strong> ${p.rimborso}</p>
+  const prestazioniList = document.getElementById('prestazioniList');
+  const medicinaliList = document.getElementById('medicinaliList');
+  
+  prestazioniList.innerHTML = prestazioni.map(p => `
+    <div class="card detailed-card">
+      <div class="card-header">
+        <h3>${p.termine}</h3>
+        <span class="card-cod">${p.cod}</span>
       </div>
-    `).join('');
-    
-    medicinaliList.innerHTML = medicinali.map(m => `
-      <div class="card">
-        <h3>${m.nome}</h3>
-        <p><strong>Descrizione:</strong> ${m.descrizione}</p>
-        <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
-        <p><strong>Rimborso:</strong> ${m.rimborso}</p>
+      <div class="detail-grid">
+        <div><strong>TIPOLOGIA:</strong> ${p.tipologia}</div>
+        <div><strong>CATEGORIA:</strong> ${p.categoria}</div>
+        <div><strong>% RIMBORSO:</strong> ${p.rimborso}</div>
+        <div><strong>MASSIMALE SPECIFICO:</strong> ${p.massimale_specifico}</div>
+        <div><strong>MASSIMALE GRUPPO:</strong> ${p.massimale_gruppo}</div>
+        <div><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${p.preventivo_prescrizione}</div>
+        <div><strong>OPT:</strong> ${p.opt}</div>
+        <div><strong>VISITA INIZIALE:</strong> ${p.visita_iniziale}</div>
+        <div><strong>VISITA FINALE:</strong> ${p.visita_finale}</div>
+        <div><strong>VALUTAZIONE SANITARIA:</strong> ${p.valutazione_sanitaria}</div>
+        <div><strong>SINONIMI:</strong> ${p.sinonimi.join(", ")}</div>
       </div>
-    `).join('');
-    
-    // Event listener per aprire il dettaglio
-    document.querySelectorAll('#prestazioniList .card').forEach(card => {
-      card.addEventListener('click', () => {
-        const nome = card.dataset.id;
-        const prestazione = prestazioni.find(p => p.nome === nome);
-        showPrestazioneDetail(prestazione);
-      });
+    </div>
+  `).join('');
+  
+  medicinaliList.innerHTML = medicinali.map(m => `
+    <div class="card">
+      <h3>${m.nome}</h3>
+      <p><strong>Descrizione:</strong> ${m.descrizione}</p>
+      <p><strong>Sinonimi:</strong> ${m.sinonimi.join(", ")}</p>
+      <p><strong>Rimborso:</strong> ${m.rimborso}</p>
+    </div>
+  `).join('');
+  
+  // Event listener per aprire il dettaglio
+  document.querySelectorAll('#prestazioniList .card').forEach(card => {
+    card.addEventListener('click', () => {
+      const termine = card.querySelector('h3').textContent;
+      const prestazione = prestazioni.find(p => p.termine === termine);
+      showPrestazioneDetail(prestazione);
     });
-  }
-
+  });
+}
   // Mostra dettaglio prestazione in modal
   function showPrestazioneDetail(prestazione) {
     const modal = document.createElement('div');
