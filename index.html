@@ -10,50 +10,20 @@
 <body>
     <div class="container">
         <header>
-            <div class="header-top">
-                <button id="themeToggle" class="theme-toggle">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <h1><i class="fas fa-heartbeat"></i> Database Prestazioni Sanitarie</h1>
-            </div>
-            
-            <nav>
-                <button class="tab-btn active" data-tab="prestazioni">
-                    <i class="fas fa-procedures"></i> Prestazioni
-                </button>
-                <button class="tab-btn" data-tab="medicinali">
-                    <i class="fas fa-pills"></i> Medicinali
-                </button>
-                <button class="tab-btn" data-tab="ricerca">
-                    <i class="fas fa-search"></i> Ricerca
-                </button>
-            </nav>
+            <h1><i class="fas fa-heartbeat"></i> Database Prestazioni Sanitarie</h1>
         </header>
         
         <main>
             <div class="search-container">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Cerca prestazioni o medicinali...">
+                    <input type="text" id="searchInput" placeholder="Cerca per termine, codice, categoria...">
                     <button id="searchBtn">
                         <i class="fas fa-search"></i> Cerca
                     </button>
                 </div>
             </div>
             
-            <div class="tab-content active" id="prestazioni">
-                <h2>Elenco Prestazioni</h2>
-                <div id="prestazioniList" class="card-list"></div>
-            </div>
-            
-            <div class="tab-content" id="medicinali">
-                <h2>Elenco Medicinali</h2>
-                <div id="medicinaliList" class="card-list"></div>
-            </div>
-            
-            <div class="tab-content" id="ricerca">
-                <h2>Risultati Ricerca</h2>
-                <div id="result"></div>
-            </div>
+            <div id="prestazioniList" class="card-list"></div>
         </main>
         
         <footer>
