@@ -35,7 +35,7 @@ function normalizePrestazione(obj) {
 function initApp() {
     // --- Inserisci qui TUTTO il contenuto di rawPrestazioni come array di oggetti valido (virgole tra oggetti!) ---
     // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
-    const rawPrestazioni :
+    const rawPrestazioni =
 {
     "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
@@ -50,7 +50,7 @@ function initApp() {
     "VISITA_FINALE": "NO",
     "VALUTAZIONE_SANITARIA": "",
     "SINONIMI": "Bastoni da deambulazione"
-  },
+  };
   {
     "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
@@ -65,7 +65,7 @@ function initApp() {
     "VISITA_FINALE": "NO",
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": "Bustino ortopedico, Corsetto, Tutore del tronco"
-  },
+  };
   {
     "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
