@@ -35,7 +35,7 @@ function normalizePrestazione(obj) {
 function initApp() {
     // --- Inserisci qui TUTTO il contenuto di rawPrestazioni come array di oggetti valido (virgole tra oggetti!) ---
     // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
-    const rawPrestazioni =[  
+    const rawPrestazioni =
 {
     "COD": "5. PORT",
     "TIPOLOGIA": "Termine sanitario",
@@ -411,7 +411,6 @@ function initApp() {
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": "ricostruzione dentale estetica, restauro estetico"
   }
-[
   {
     "COD": "TNON",
     "TIPOLOGIA": "Termine sanitario",
@@ -892,8 +891,6 @@ function initApp() {
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": "sedazione controllata, sedazione leggera"
   }
-]
-[
   {
     "COD": "TNON",
     "TIPOLOGIA": "Termine sanitario",
@@ -2199,8 +2196,6 @@ function initApp() {
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": "ATTACCO A PRESSIONE; ATTACCO DI PRECISIONE"
   }
-]
-[
   {
     "COD": "1.1 ODONT",
     "TIPOLOGIA": "Termine sanitario",
@@ -2486,17 +2481,6 @@ function initApp() {
     "VALUTAZIONE_SANITARIA": "NO",
     "SINONIMI": ""
   }
-]
-  // Normalizza tutte le proprietà
-
-  const medicinali = [
-    {
-      nome: "Tachipirina",
-      descrizione: "Farmaco antipiretico e antidolorifico",
-      sinonimi: ["paracetamolo"],
-      rimborso: "40%"
-    }
-  ];
     // Normalizza tutte le proprietà
     const prestazioni = rawPrestazioni.map(normalizePrestazione);
 
