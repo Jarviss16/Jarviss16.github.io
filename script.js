@@ -37,7 +37,7 @@ function initApp() {
     // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
     const rawPrestazioni =
 {
-    "COD": "5. PORT",
+    "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
     "TERMINE": "BASTONI CANADESI",
     "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
@@ -52,7 +52,7 @@ function initApp() {
     "SINONIMI": "Bastoni da deambulazione"
   },
   {
-    "COD": "5. PORT",
+    "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
     "TERMINE": "BUSTO O CORSETTO ORTOPEDICO",
     "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
@@ -67,7 +67,7 @@ function initApp() {
     "SINONIMI": "Bustino ortopedico, Corsetto, Tutore del tronco"
   },
   {
-    "COD": "5. PORT",
+    "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
     "TERMINE": "CALZATURE ORTOPEDICHE",
     "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
@@ -82,7 +82,7 @@ function initApp() {
     "SINONIMI": "Scarpe ortopediche"
   },
   {
-    "COD": "5. PORT",
+    "COD": "5PORT",
     "TIPOLOGIA": "Termine sanitario",
     "TERMINE": "CALZE O GAMBALETTI ELASTICI",
     "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
