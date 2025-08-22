@@ -159,7 +159,7 @@ function initApp() {
   {
     "COD": "5. PORT",
     "TIPOLOGIA": "Termine sanitario",
-    "TERMINE": "CUSCINO ORTOPEDICO",
+    "TERMINE": "CUSCINO_ORTOPEDICO",
     "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
     "RIMBORSO": "20%",
     "MASSIMALE_SPECIFICO": "300€ - 3 ANNI AD AVENTE DIRITTO",
@@ -2488,7 +2488,6 @@ function initApp() {
   }
 ]
   // Normalizza tutte le proprietà
-  const prestazioni = rawPrestazioni.map(normalizePrestazione);
 
   const medicinali = [
     {
