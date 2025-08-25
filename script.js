@@ -13,8 +13,6 @@ const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const resultsContainer = document.getElementById('resultsContainer');
 const termsCount = document.getElementById('termsCount');
-const addTermButton = document.getElementById('addTermButton');
-
 // Dizionario dei termini sanitari con tutte le voci richieste (senza descrizione)
 const dizionarioSanitario = [
     {
@@ -2521,16 +2519,6 @@ function initApp() {
         currentSearchTerm = searchInput.value.toLowerCase();
         filterTerms();
     });
-
-    // Imposta il link per il pulsante "Aggiungi termine"
-    addTermButton.href = "https://forms.gle/SmBeGsHDuRY7fqDH8"; // Sostituire con il link corretto quando disponibile
-
-    // Aggiungi gestione click per il pulsante (opzionale)
-    addTermButton.addEventListener('click', function(e) {
-        // Qui puoi aggiungere eventuali azioni prima del reindirizzamento
-        console.log('Reindirizzamento alla pagina di aggiunta termine');
-        // Il reindirizzamento avverrà tramite l'href del link
-    });
 }
 
 // Funzione per filtrare i termini in base alla ricerca
@@ -2597,4 +2585,5 @@ function updateStats(count) {
 }
 
 // L'app verrà inizializzata solo dopo l'accesso corretto
+// Non è necessario chiamare initApp() qui perché verrà chiamata dopo la verifica della passwordccesso corretto
 // Non è necessario chiamare initApp() qui perché verrà chiamata dopo la verifica della password
