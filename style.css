@@ -9,13 +9,98 @@ body {
     background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
     color: #5d4037;
     line-height: 1.6;
-    padding: 20px;
     min-height: 100vh;
 }
 
+.hidden {
+    display: none !important;
+}
+
+/* Stili per l'accesso */
+.accesso-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+    padding: 20px;
+}
+
+.accesso-box {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.accesso-header {
+    margin-bottom: 30px;
+}
+
+.accesso-header i {
+    font-size: 3rem;
+    color: #f57c00;
+    margin-bottom: 15px;
+}
+
+.accesso-header h2 {
+    color: #5d4037;
+    margin-bottom: 10px;
+}
+
+.accesso-header p {
+    color: #795548;
+}
+
+.accesso-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.accesso-form input {
+    padding: 15px;
+    border: 2px solid #ffb74d;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.accesso-form input:focus {
+    border-color: #f57c00;
+}
+
+.accesso-form button {
+    padding: 15px;
+    background: #f57c00;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+    font-weight: 600;
+}
+
+.accesso-form button:hover {
+    background: #e65100;
+}
+
+.errore-accesso {
+    color: #d32f2f;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+/* Stili per l'app */
 .container {
     max-width: 1400px;
     margin: 0 auto;
+    padding: 20px;
 }
 
 header {
@@ -90,18 +175,18 @@ h1 {
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: #4caf50;
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
     color: white;
     text-decoration: none;
     border-radius: 25px;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.3s;
+    box-shadow: 0 4px 8px rgba(245, 124, 0, 0.3);
 }
 
 .add-term-btn:hover {
-    background: #388e3c;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 12px rgba(245, 124, 0, 0.4);
 }
 
 .stats {
@@ -207,5 +292,9 @@ footer {
     
     .detail-label {
         min-width: 140px;
+    }
+    
+    .accesso-box {
+        padding: 25px;
     }
 }
