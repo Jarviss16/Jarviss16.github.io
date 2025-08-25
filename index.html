@@ -3,41 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dizionario Sanitario</title>
+    <title>Dizionario Sanitario - Accesso</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
-            <p class="header-description">Trova informazioni su termini medici e relative coperture</p>
-        </header>
-        
-        <section class="search-section">
-            <div class="search-container">
-                <input type="text" id="searchInput" placeholder="Cerca un termine sanitario...">
-                <button id="searchButton">Cerca</button>
+    <div id="accessoContainer" class="accesso-container">
+        <div class="accesso-box">
+            <div class="accesso-header">
+                <i class="fas fa-lock"></i>
+                <h2>Accesso Riservato</h2>
+                <p>Inserisci la password per accedere al dizionario sanitario</p>
+            </div>
+            <div class="accesso-form">
+                <input type="password" id="passwordInput" placeholder="Inserisci la password">
+                <button id="accediButton">Accedi</button>
+                <p id="erroreAccesso" class="errore-accesso"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="appContainer" class="hidden">
+        <div class="container">
+            <header>
+                <h1><i class="fas fa-book-medical"></i> Dizionario Sanitario</h1>
+                <p class="header-description">Trova informazioni su termini medici e relative coperture</p>
+            </header>
+            
+            <section class="search-section">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Cerca un termine sanitario...">
+                    <button id="searchButton">Cerca</button>
+                </div>
+                
+                <div class="actions">
+                    <a href="#" id="addTermButton" class="add-term-btn">
+                        <i class="fas fa-plus-circle"></i> Aggiungi termine
+                    </a>
+                </div>
+            </section>
+            
+            <div class="stats">
+                <span id="termsCount">0 termini trovati</span>
             </div>
             
-            <div class="actions">
-                <a href="#" id="addTermButton" class="add-term-btn">
-                    <i class="fas fa-plus-circle"></i> Aggiungi termine
-                </a>
+            <div class="results-container" id="resultsContainer">
+                <!-- I risultati della ricerca appariranno qui -->
             </div>
-        </section>
-        
-        <div class="stats">
-            <span id="termsCount">0 termini trovati</span>
+            
+            <footer>
+                <p>Dizionario Sanitario &copy; 2023 - Tutti i diritti riservati</p>
+            </footer>
         </div>
-        
-        <div class="results-container" id="resultsContainer">
-            <!-- I risultati della ricerca appariranno qui -->
-        </div>
-        
-        <footer>
-            <p>Dizionario Sanitario &copy; 2023 - Tutti i diritti riservati</p>
-        </footer>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
