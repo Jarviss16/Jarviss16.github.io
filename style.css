@@ -176,26 +176,58 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 24px;
+    padding: 14px 28px;
     color: white;
     text-decoration: none;
-    border-radius: 25px;
+    border-radius: 30px;
     font-weight: 600;
     transition: all 0.3s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 2px solid transparent;
 }
 
 .add-term-btn {
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+    box-shadow: 0 4px 8px rgba(245, 124, 0, 0.3);
 }
 
 .medicinali-btn {
-    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    background: linear-gradient(135deg, #ff8f00 0%, #f57c00 100%);
+    box-shadow: 0 4px 8px rgba(255, 143, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.medicinali-btn::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+    background: linear-gradient(45deg, #ff8f00, #ffca28, #ff8f00);
+    z-index: -1;
+    border-radius: 35px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.medicinali-btn:hover::before {
+    opacity: 0.3;
 }
 
 .action-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.action-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.action-btn i {
+    font-size: 1.2em;
 }
 
 .stats {
@@ -315,5 +347,6 @@ footer {
     .action-btn {
         width: 100%;
         justify-content: center;
+        padding: 12px 24px;
     }
 }
