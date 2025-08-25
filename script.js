@@ -13,7 +13,8 @@ const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const resultsContainer = document.getElementById('resultsContainer');
 const termsCount = document.getElementById('termsCount');
-// Dizionario dei termini sanitari con tutte le voci richieste (senza descrizione)
+
+// Dizionario dei termini sanitari
 const dizionarioSanitario = [
     {
         cod: "5PORT",
@@ -2476,6 +2477,7 @@ const dizionarioSanitario = [
         sinonimi: " "
     }
 ];
+
 // Variabile per il termine di ricerca
 let currentSearchTerm = '';
 
@@ -2488,8 +2490,7 @@ function verificaAccesso() {
         accessoContainer.classList.add('hidden');
         appContainer.classList.remove('hidden');
         // Inizializza l'app
-        displayTerms(dizionarioSanitario);
-        updateStats(dizionarioSanitario.length);
+        initApp();
     } else {
         // Accesso negato
         erroreAccesso.textContent = "Password errata. Riprova.";
@@ -2519,6 +2520,10 @@ function initApp() {
         currentSearchTerm = searchInput.value.toLowerCase();
         filterTerms();
     });
+    
+    // Visualizza i termini iniziali
+    displayTerms(dizionarioSanitario);
+    updateStats(dizionarioSanitario.length);
 }
 
 // Funzione per filtrare i termini in base alla ricerca
@@ -2583,7 +2588,3 @@ function displayTerms(terms) {
 function updateStats(count) {
     termsCount.textContent = `${count} termini trovati`;
 }
-
-// L'app verrà inizializzata solo dopo l'accesso corretto
-// Non è necessario chiamare initApp() qui perché verrà chiamata dopo la verifica della passwordccesso corretto
-// Non è necessario chiamare initApp() qui perché verrà chiamata dopo la verifica della password
