@@ -1,2602 +1,2561 @@
-// Normalizza proprietà oggetto prestazioni in minuscolo e underscore
-function normalizePrestazione(obj) {
-    const norm = {};
-    Object.entries(obj).forEach(([k, v]) => {
-        let key = k.trim().toLowerCase().replace(/[\s\-.]+/g, "_").replace(/_+/g, "_");
-        if (key === "preventivo_–_prescrizione" || key === "preventivo_-_prescrizione" || key === "preventivo___prescrizione") key = "preventivo_prescrizione";
-        if (key === "massimale__specifico") key = "massimale_specifico";
-        if (key === "massimale__gruppo") key = "massimale_gruppo";
-        if (key === "valutazione_sanitaria_") key = "valutazione_sanitaria";
-        if (key === "opt:") key = "opt";
-        if (key === "visita_iniziale:") key = "visita_iniziale";
-        if (key === "visita_finale:") key = "visita_finale";
-        if (key === "massimale_gruppo:") key = "massimale_gruppo";
-        if (key === "rimborso:") key = "rimborso";
-        if (key === "massimale_specifico:") key = "massimale_specifico";
-        if (key === "categoria:") key = "categoria";
-        if (key === "sinonimi" && typeof v === 'string') {
-            v = v.split(',').map(s => s.trim()).filter(Boolean);
-        }
-        norm[key] = v == null ? '' : v;
-    });
-    [
-        'cod','tipologia','termine','categoria','rimborso','massimale_specifico','massimale_gruppo',
-        'preventivo_prescrizione','opt','visita_iniziale','visita_finale',
-        'valutazione_sanitaria','sinonimi'
-    ].forEach(key => {
-        if (!norm[key]) {
-            norm[key] = (key === 'sinonimi') ? [] : '';
-        }
-    });
-    return norm;
+// Dizionario dei termini sanitari con tutte le voci richieste (senza descrizione)
+const dizionarioSanitario = [
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Bastoni canadesi",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Bastoni da deambulazione"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Busto o corsetto ortopedico",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Bustino ortopedico, Corsetto, Tutore del tronco"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Calzature ortopediche",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Bustino ortopedico, Corsetto, Tutore del tronco"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Calze o gambaletti elastici",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Calze elastiche, Calze a compressione, Calze terapeutiche"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Carrozzina per deambulazione",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Carrozzella, Sedia a rotelle"
+    },
+        {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Cavigliera elastica",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore elastico di caviglia"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Cinto erniario",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Pancera, Fascia addominale"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Collare cervicale",
+        termine: "Calze o gambaletti elastici",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore cervicale, Collare ortopedico"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Cuscino ortopedico",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Cuscino da seduta"
+    },
+        {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Divaricatore",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore divaricatore"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Ginocchiere",
+        termine: "Calze o gambaletti elastici",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore del ginocchio"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Mutanda contenitiva",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Mutanda elastica, Pancera contenitiva"
+    },
+            {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Divaricatore",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore divaricatore"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Plantari ortopedici",
+        termine: "Calze o gambaletti elastici",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Solette ortopediche"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Rialzo calcaneare",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tallonetta, Zeppa calcaneare"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Sospensorio",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore sospensorio"
+    },
+    {
+        cod: "5PORT",
+        tipologia: "Termine sanitario",
+        termine: "Tutore",
+        categoria: "Presidi ortopedici acquisto",
+        rimborso: "20%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tutore articolare"
+    },
+    {
+        cod: "4LENT",
+        tipologia: "Termine sanitario",
+        termine: "Non definito",
+        categoria: "Lenti graduate",
+        rimborso: "30%",
+        maxSpec: "300eur 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si test visivo",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "3MEDIC",
+        tipologia: "Termine sanitario",
+        termine: "Non definito",
+        categoria: "Medicinali",
+        rimborso: "40%",
+        maxSpec: "300eur anno solare, nucleo famigliare, franchigia 75eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "6PADE",
+        tipologia: "Termine sanitario",
+        termine: "Non definito",
+        categoria: "Presidi ortopedici adeguamenti",
+        rimborso: "20%",
+        maxSpec: "300eur, 3 anni ad avente diritto",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Porta impronte",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Porta impronte dentale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Applicazioni di calcio fosfato",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Applicazione calcio fosfato, Trattamento calcio fosfato"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Dentoplastica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Modellazione dentale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Faccetta",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Faccetta dentale, Veneer"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Pulizia protesi",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Igiene protesica, Pulizia dentiera"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Ricostruzione estetica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Ricostruzione dentale estetica, Restauro estetico"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Seduta motivazionale con protocollo gbt",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Seduta motivazionale gbt"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Terapia parodontale non chirurgica laser assistita a quadrante",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Terapia parodontale laser"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Trattamento remineralizzante",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Trattamento remineralizzante dentale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Trattamento smacchiante",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sbiancamento dentale, Trattamento smacchiante denti"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Weener ceramica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Veneer ceramica, Faccetta ceramica"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Marca da bollo",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Bollo fiscale, Marca fiscale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Attivazione impianti",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Attivazione impianto dentale, Posizionamento impianto"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Cementazione corona",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Cementazione protesica, Fissaggio corona"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Dima chirurgica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Guida chirurgica, Mascherina chirurgica"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Gbr odontoiatria",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rigenerazione ossea guidata"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Grande rialzo del seno mascellare",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rialzo seno mascellare, Sinus lift"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Maggiorazione per elemento in disilicato",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Supplemento disilicato, Incremento costo disilicato"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Membrana",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Membrana chirurgica, Barriera ossea"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Molaggio Selettivo",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Molaggio occlusale selettivo"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Progettazione e dime per chirurgia implantare guidata",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Progettazione implantare guidata, Guida chirurgica implantare"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Regolarizzazione cresta ossea",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Modellazione cresta ossea, Rimodellamento osseo"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Rigenerazione Ossea",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rigenerazione ossea, Osteorigenerazione"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Rimozione corona",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rimozione protesi, Estrazione corona"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Rimozione perno",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rimozione perno dentale, Estrazione perno"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Socket prevention",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Prevenzione alveolo, Protezione socket"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Visita controllo odontoiatrica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Controllo odontoiatrico, Visita di controllo dentale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Vite di guarigione",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Vite di osteointegrazione, Healing screw"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Anestesia",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Anestesia locale, Anestesia odontoiatrica"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Ansiolisi",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sedazione leggera, Sedazione cosciente"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Applicazione del farmaco",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Somministrazione farmaco, Applicazione medicinale"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Assistenza infermieristica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Assistenza nurse, Supporto infermieristico"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Assistenza medico",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Assistenza medica, Supporto medico"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Codice udi materiale riempitivo",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Codice udi, Identificativo dispositivo"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Diritto fisso di segreteria",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Quota segreteria, Tassa segreteria"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Sala operatoria",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sala chirurgica, Blocco operatorio"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Sedazione cosciente",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sedazione controllata, Sedazione leggera"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Sutura",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Punti di sutura, Sutura chirurgica"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Terapia antibiotica",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Trattamento antibiotico"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Tessera paziente",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Card paziente, Badge paziente"
+    },
+    {
+        cod: "TNON",
+        tipologia: "Termine sanitario",
+        termine: "Utilizzo dispositivo di ancoraggio membrana",
+        categoria: "Terapie non rimborsabili",
+        rimborso: "0%",
+        maxSpec: "0eur",
+        maxGrup: "maxspec",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Utilizzo ancoraggio membrana, Fissaggio membrana"
+    },
+    {
+        cod: "21ALAB",
+        tipologia: "Termine sanitario",
+        termine: "Da definire",
+        categoria: "Analisi cliniche",
+        rimborso: "30%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "21ALAB",
+        tipologia: "Termine sanitario",
+        termine: "Da definire",
+        categoria: "Analisi di laboratorio",
+        rimborso: "30%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Medicazione chirurgica, rimborsabile solo con intervento",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Medicazione post-operatoria, Sutura"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Ecocolordoppler",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Eco color doppler, Ecografia doppler"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Biopsia",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Prelievo tessutale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Colonscopia",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Esame colonico, Colonoscopia digestiva"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Ecg, Elettrocardiogramma",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Elettrocardiogramma, Ecg"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Endoscopia",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Esame endoscopico"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Tonometria",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Misurazione della pressione intraoculare"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Tomografia a emissione di positroni",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Pet"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Cefalometria",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Radiografia cefalometrica"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Diagnosi del modello di studio",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Valutazione ortodontica del modello"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Impronta",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Impressione dentale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Impronta per applicazione corona provvisoria",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Impressione per corona temporanea"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Ortopantomografia",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Opg, Panoramica dentale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Scansione mascella",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Scansione 3d mascella"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Sondaggio parodontale",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Esame parodontale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Status radiografico",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Radiografia completa, Radiografia di controllo"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Telecranio",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Radiografia latero, laterale del cranio"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Rmn",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Risonanza magnetica nucleare, Risonanza magnetica"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Tomografia assiale computerizzata",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Tac, Tomografia computerizzata"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Cartella parodontale",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Cartella clinica parodontale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Check Up Ortodontico",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Valutazione ortodontica, Visita ortodontica"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Diagnostica pre-sedazione",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Esame pre-anestesico"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Studio del caso",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Analisi del caso"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Valutazione funzionale",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Valutazione clinica"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Opt",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Ortopantomografia"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Radiografia endorale",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Radio endorale"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Rilevazione impronte",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Presa impronte"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Sviluppo modelli ortodontici",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Realizzazione modelli ortodontici"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Sviluppo modello gesso con hortob",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Realizzazione modello gesso ortodontico"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Status fotografico",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Documentazione fotografica ortodontica"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Cone beam ct",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Cbct, Tac dentale 3d"
+    },
+    {
+        cod: "22DGN",
+        tipologia: "Termine sanitario",
+        termine: "Dentalscan",
+        categoria: "Diagnostica",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Scansione dentale 3d"
+    },
+    {
+        cod: "23TFSI",
+        tipologia: "Termine sanitario",
+        termine: "Da definire",
+        categoria: "Terapie Fisiche",
+        rimborso: "20%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "23TFSI",
+        tipologia: "Termine sanitario",
+        termine: "Da definire",
+        categoria: "Terapie riabilitative",
+        rimborso: "20%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "24INCH",
+        tipologia: "Termine sanitario",
+        termine: "Da definire",
+        categoria: "Interventi chirurgici ambulatoriali",
+        rimborso: "10%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "25VSPE",
+        tipologia: "Termine sanitario",
+        termine: "Prima visita",
+        categoria: "Visite specialistiche",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "25VSPE",
+        tipologia: "Termine sanitario",
+        termine: " ",
+        categoria: "Visite specialistiche",
+        rimborso: "35%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "26TPSI",
+        tipologia: "Termine sanitario",
+        termine: " ",
+        categoria: "Percorsi psicologici",
+        rimborso: "20%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "27VDSA",
+        tipologia: "Termine sanitario",
+        termine: " ",
+        categoria: "Percorsi valutazione dsa",
+        rimborso: "30% completamento percorso",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "27VDSA",
+        tipologia: "Termine sanitario",
+        termine: " ",
+        categoria: "Trattamento dsa",
+        rimborso: "20%",
+        maxSpec: "maxgrup",
+        maxGrup: "1000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Incappucciamento della polpa indiretto",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: " ",
+        opt: " ",
+        visitaIniziale: " ",
+        visitaFinale: " ",
+        valutazioneSanitaria: " ",
+        sinonimi: "Cappia pulpare indiretto; Indirect pulp capping"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Pulpotomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: " ",
+        opt: " ",
+        visitaIniziale: " ",
+        visitaFinale: " ",
+        valutazioneSanitaria: " ",
+        sinonimi: "Amputazione della polpa; Polpotomia"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Vestiboloplastica con trapianto",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: " ",
+        opt: " ",
+        visitaIniziale: " ",
+        visitaFinale: " ",
+        valutazioneSanitaria: " ",
+        sinonimi: "Chirurgia del vestibolo; Aumento del vestibolo; Trapianto di mucosa"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Allacciamento di dente incluso",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Applicazione del bracket per disinclusione; Attacco ortodontico su dente incluso"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Apicectomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Resezione apicale; Chirurgia endodontica, Avulsione dente; Disinclusione canini; Rimozione dente; Rizectomia; Rizotomia"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Estrazione Dente/Radice",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Avulsione; Exodonzia; Estratto; Rimozione impianto"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Estrazione di impianto a vite endosseo",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Rimozione impianto; Rimozione vite endossea; Rimozione fixture; Rimozione del vecchio ponte"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Estrazione di impianto a vite endosseo",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Rimozione impianto; Rimozione vite endossea; Rimozione fixture; Rimozione del vecchio ponte"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Frenulectomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Frenuloplastica; Escissione del frenulo"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Frenulotomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Incisione del frenulo"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Germectomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Estrazione del germe dentario; Avulsione del germe"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Intervento chirurgico enucleazione cisti",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Enucleazione cistica; Asportazione chirurgica di cisti; Cistectomia"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Maggiorazione per prestazioni in sedazione endovenosa",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sedazione cosciente; Anestesia endovenosa; Ivs"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Otturazione",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Riparazione carie; Composito; Filling; Restauro; Build up preprotesico; Composito"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Ricostruzione",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Coronale; Rebuilding; Ricostruzione composita; Chirurgia preprotesica; Ricostruzione pre-protesica"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Sigillatura dei solchi",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Sigillanti; Sealant"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Devitalizzazione",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Cura canalare; Trattamento endodontico; Terapia canalare; Ritrattamento canalare; Trattamento endodontico; Ritrattamento multi asintomatico"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Ablazione tartaro",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Detartrasi; Igiene orale; Pulizia dei denti; Scaling; Abt; Detartrasi; Fluoroprofilassi"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Impianto a vite, per elemento esclusa protesizzazione",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Fixture; Vite endossea; Posizionamento impianto; Componentistica implantoprotesica; Impianto dentale oxy premium; Impianto sommerso"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Allungamento corona clinica",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Chirurgia di allungamento coronale; Crown lengthening"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Curettage",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Raschiamento; Curettaggio gengivale; Full mouth disinfection"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Gengivectomia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Resezione gengivale; Escissione gengivale"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Lembo gengivale",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Chirurgia a lembo; Sollevamento del lembo; Lembo"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Levigatura radicolare",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Root planing; Ablazione tartaro sottogengivale; Levigatura sestante; Scaling e root planing"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Muco gengivale",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Chirurgia muco gengivale; Innesto di tessuto connettivo; Innesto gengivale"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Barra",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Barra palatina; Barra di ancoraggio; Dolder bar"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Bottone per overdenture",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Attacco a bottone; Stud attachment; Attacco radicolare; Attacco locator"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Bottone ritentivo su barra",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Clip di ritenzione; Attacco a scivolamento; Attacco su barra"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Cappetta per overdenture",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Copercorona; Radice cappata; Corona a cappuccio"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Corona",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Capsula no visita finale se solo 1; Corona fissa; Cappetta; Maryland no visita finale se solo 1"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Corona provvisoria, anche rinforzata",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Provvisorio; Corona temporanea; Protesizione provvisoria; Elemento provvisorio rinforzato"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Intarsio",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Restauro indiretto; Onlay; Inlay"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Moncone",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Perno moncone; Anima radicolare; Core build-up; Abutment; Attacco ballattachment"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Moncone implantare provvisorio",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Pilastro provvisorio; Moncone di guarigione; Abutment provvisorio"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Moncone per impianto",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Abutment; Pilastro implantare; Transfer"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Perno moncone singolo o doppio",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Perno radicolare fuso; Anima colata"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi avvitata per toronto bridge",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Protesi fissa ibrida avvitata; Toronto bridge; Protesi su impianti avvitata; Ponte fisso"
+    },
+    {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi fissa all on four",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Riabilitazione protesica fissa con elementi in composito su impianti"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi totale rimovibile per overdenture",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Overdenture; Protesi rimovibile su radici; Protesi totale con attacchi"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Scopertura impianto",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Reintervento di scopertura; Secondo tempo chirurgico; Apertura impianto"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Aggiunta di microrete o rinforzo su protesi",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Aggiunta dente sllo scheletrato"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Attacco extracoronale su scheletrato",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Attacco a pressione; Attacco di precisione"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Attacco intracoronale su scheletrato",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Attacco a scatola; Attacco di precisione intracoronale"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Barra di rinforzo su protesi rimovibile",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rinforzo metallico; Rete di rinforzo; Retina di rinforzo"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Cappetta radicolare con attacco",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Copertura radicolare con attacco; Overdenture su radice"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Gancio a filo",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Gancio in lega; Gancio elaborato"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Gancio fuso",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Gancio colato; Gancio in metallo nobile"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi mobile",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Dentiera; Protesi rimovibile; Protesi mobile parziale; Valplast"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi mobile totale provvisoria",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Dentiera provvisoria; Protesi immediata"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Protesi scheletrata",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "Si",
+        visitaFinale: "Si",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Scheletrato; Protesi parziale rimovibile metallica; Ppr; Apparecchio scheletrico con ganci; Elemento dentario per protesi scheletrica"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Ribasatura protesia",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Rifoderatura; Rielaborazione base protesica; Rebase"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Riparazione apparecchio mobile o di contenzione",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Aggiustatura; Ripristino; Saldatura apparecchio"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Riparazione corona",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Ricostruzione di capsula; Ripristino corona; Aggiusta corona"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Riparazione protesi mobile o scheletrata",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Riparazione dentiera; Saldatura scheletrato; Aggiunta di un dente; Riparazione faccetta"
+    },
+   {
+        cod: "11ODONT",
+        tipologia: "Termine sanitario",
+        termine: "Saldatura protesi fissa",
+        categoria: "Odontoiatria",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "No",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Ricongiunzione ponticolo; Riparazione ponte; Saldatura di un elemento"
+    },
+   {
+        cod: "12OCONT",
+        tipologia: "Termine sanitario",
+        termine: "Ortodonzia contenzione",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Apparecchio di contenzione"
+    },
+   {
+        cod: "13APP",
+        tipologia: "Termine sanitario",
+        termine: "Ortodonzia fisso/mobile",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "maxgrup",
+        maxGrup: "max 500eur arcata",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: "Apparecchio funzionale; Apparecchio intercettivo; Bandaggio; Disgiuntore a 2 bande; Espansore rapido palatale"
+    },
+   {
+        cod: "13APP",
+        tipologia: "Termine sanitario",
+        termine: "Apparecchio mobile",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "max 500eur arcata",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: " "
+    },
+   {
+        cod: "13APP",
+        tipologia: "Termine sanitario",
+        termine: "Invisalign",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "max 500eur arcata",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "Si",
+        visitaIniziale: "Si",
+        visitaFinale: "No",
+        valutazioneSanitaria: "Si",
+        sinonimi: " "
+    },
+   {
+        cod: "13APP",
+        tipologia: "Termine sanitario",
+        termine: "Splintaggio",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "max 500eur arcata",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: "Contenzione fissa"
+    },
+   {
+        cod: "13APP",
+        tipologia: "Termine sanitario",
+        termine: "Visita controllo ortodonzia",
+        categoria: "Ortodonzia ",
+        rimborso: "10% ; > 2 Anni ; > 4 Anni 1° iscrizione 20% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        maxSpec: "max 500eur arcata",
+        maxGrup: "3000eur",
+        preventivoPrescrizione: "Si",
+        opt: "No",
+        visitaIniziale: "No",
+        visitaFinale: "No",
+        valutazioneSanitaria: "No",
+        sinonimi: " "
+    }
+];
+
+// Elementi DOM
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+const resultsContainer = document.getElementById('resultsContainer');
+const termsCount = document.getElementById('termsCount');
+const addTermButton = document.getElementById('addTermButton');
+
+// Variabile per il termine di ricerca
+let currentSearchTerm = '';
+
+// Inizializza la visualizzazione
+displayTerms(dizionarioSanitario);
+updateStats(dizionarioSanitario.length);
+
+// Event listeners
+searchInput.addEventListener('input', function() {
+    currentSearchTerm = this.value.toLowerCase();
+    filterTerms();
+});
+
+searchButton.addEventListener('click', () => {
+    currentSearchTerm = searchInput.value.toLowerCase();
+    filterTerms();
+});
+
+// Funzione per filtrare i termini in base alla ricerca
+function filterTerms() {
+    let filteredTerms = dizionarioSanitario;
+    
+    // Filtra per termine di ricerca
+    if (currentSearchTerm) {
+        filteredTerms = filteredTerms.filter(term => 
+            term.termine.toLowerCase().includes(currentSearchTerm) ||
+            term.sinonimi.toLowerCase().includes(currentSearchTerm) ||
+            term.cod.toLowerCase().includes(currentSearchTerm) ||
+            term.tipologia.toLowerCase().includes(currentSearchTerm)
+        );
+    }
+    
+    displayTerms(filteredTerms);
+    updateStats(filteredTerms.length);
 }
 
-// Avvia l'applicazione principale
-function initApp() {
-    // --- Inserisci qui TUTTO il contenuto di rawPrestazioni come array di oggetti valido (virgole tra oggetti!) ---
-    // Di seguito un ESEMPIO RIDOTTO, inserisci tutto il tuo array completo e corretto
-    const rawPrestazioni =
-{
-    "COD": "5. PORT",
-    "TIPOLOGIA": "Termine sanitario",
-    "TERMINE": "BASTONI CANADESI",
-    "CATEGORIA": "PRESIDI ORTOPEDICI (ACQUISTO)",
-    "RIMBORSO": "20%",
-    "MASSIMALE_SPECIFICO": "300eur - 3 ANNI AD AVENTE DIRITTO",
-    "MASSIMALE_GRUPPO": "VEDI MASSIMALE SPECIFICO",
-    "PREVENTIVO_PRESCRIZIONE": "SI",
-    "OPT": "NO",
-    "VISITA_INIZIALE": "NO",
-    "VISITA_FINALE": "NO",
-    "VALUTAZIONE_SANITARIA": "",
-    "SINONIMI": "Bastoni da deambulazione"
-  };
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: BASTONI CANADESI
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO 
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA :
-SINONIMI: Bastoni da deambulazione
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: BUSTO O CORSETTO ORTOPEDICO
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Bustino ortopedico, Corsetto, Tutore del tronco
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CALZATURE ORTOPEDICHE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Scarpe ortopediche
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CALZE O GAMBALETTI ELASTICI
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Calze elastiche, Calze a compressione, Calze terapeutiche
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CARROZZINA PER DEAMBULAZIONE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Carrozzella, Sedia a rotelle
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CAVIGLIERA ELASTICA
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore elastico di caviglia
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CINTO ERNIARIO
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Pancera, Fascia addominale
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: COLLARE CERVICALE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore cervicale, Collare ortopedico
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: CUSCINO ORTOPEDICO
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Cuscino da seduta
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: DIVARICATORE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore divaricatore
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: GINOCCHIERA
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore del ginocchio
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: MUTANDA CONTENITIVA
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Mutanda elastica, Pancera contenitiva
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: PLANTARI ORTOPEDICI
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Solette ortopediche
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: RIALZO CALCANEARE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tallonetta, Zeppa calcaneare
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: SOSPENSORIO
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore sospensorio
-},
-{
-COD: 5. PORT
-TIPOLOGIA: Termine sanitario
-TERMINE: TUTORE
-CATEGORIA: PRESIDI ORTOPEDICI (ACQUISTO)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: OPT: SI
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI: Tutore articolare
-},
-{
-COD: 4.LENT
-TIPOLOGIA: Termine sanitario
-TERMINE: NON DEFINITO
-CATEGORIA: LENTI GRADUATE
-% RIMBORSO: 30%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: SI TEST VISIVO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI:
-},
-{
-COD: 3.MEDIC
-TIPOLOGIA: Termine sanitario
-TERMINE: NON DEFINITO
-CATEGORIA: MEDICINALI
-% RIMBORSO: 40%
-MASSIMALE SPECIFICO: "300€ ANNO SOLARE - NUCLEO FAMILIARE - FRANCHIGIA 75€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI:
-},
-{
-COD: 6. PADE
-TIPOLOGIA: Termine sanitario
-TERMINE: NON DEFINITO
-CATEGORIA: "PRESIDI ORTOPEDICI (ADEGUAMENTI)
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: 300€ - 3 ANNI AD AVENTE DIRITTO
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA : NO
-SINONIMI:
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: PORTA IMPRONTE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: porta impronte dentale
-},
-{ 
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: APPLICAZIONI DI CALCIO FOSFATO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: applicazione calcio fosfato, trattamento calcio fosfato
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: DENTOPLASTICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: modellazione dentale
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: FACCETTA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: faccetta dentale, veneer
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: PULIZIA PROTESI
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: igiene protesica, pulizia dentiera
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: RICOSTRUZIONE ESTETICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ricostruzione dentale estetica, restauro estetico
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: SEDUTA MOTIVAZIONALE CON PROTOCOLLO GBT
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: seduta motivazionale GBT
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: TERAPIA PARODONTALE NON CHIRURGICA LASER ASSISTITA A QUADRANTE
-C CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: terapia parodontale laser
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: TRATTAMENTO REMINERALIZZANTE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: trattamento remineralizzante dentale
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: TRATTAMENTO SMACCHIANTE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: sbiancamento dentale, trattamento smacchiante denti
- },
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: WEENER CERAMICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: veneer ceramica, faccetta ceramica
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: WEENER CERAMICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: veneer ceramica, faccetta ceramica
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: MARCA DA BOLLO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: bollo fiscale, marca fiscale
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: ATTIVAZIONE IMPIANTI
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: attivazione impianto dentale, posizionamento impianto
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: CEMENTAZIONE CORONA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: cementazione protesica, fissaggio corona
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: DIMA CHIRURGICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: guida chirurgica, mascherina chirurgica
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: GBR (ODONTOIATRIA)
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: rigenerazione ossea guidata
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: GRANDE RIALZO DEL SENO MASCELLARE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: rialzo seno mascellare, sinus lift
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: MAGGIORAZIONE PER ELEMENTO IN DISILICATO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: supplemento disilicato, incremento costo disilicato
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: MEMBRANA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: membrana chirurgica, barriera ossea
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: MOLAGGIO SELETTIVO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: molaggio occlusale selettivo
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: PROGETTAZIONE E DIME PER CHIRURGIA IMPLANTARE GUIDATA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: progettazione implantare guidata, guida chirurgica implantare
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: REGOLARIZZAZIONE CRESTA OSSEA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: modellazione cresta ossea, rimodellamento osseo
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: RIGENERAZIONE OSSEA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: rigenerazione ossea, osteo-rigenerazione
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: RIMOZIONE CORONA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: rimozione protesi, estrazione corona
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: RIMOZIONE PERNO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: rimozione perno dentale, estrazione perno
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: SOCKET PREVENTION
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: prevenzione alveolo, protezione socket
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: VISITA CONTROLLO ODONTOIATRICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: controllo odontoiatrico, visita di controllo dentale
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: VITE DI GUARIGIONE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: vite di osteointegrazione, healing screw
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: ANESTESIA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: anestesia locale, anestesia odontoiatrica
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: ANSIOLISI
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: sedazione leggera, sedazione cosciente
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: APPLICAZIONE DEL FARMACO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: somministrazione farmaco, applicazione medicinale
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: ASSISTENZA INFERMIERISTICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: assistenza nurse, supporto infermieristico
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: ASSISTENZA MEDICO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: assistenza medica, supporto medico
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: CODICE UDI MATERIALE RIEMPITIVO
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: codice UDI, identificativo dispositivo
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: DIRITTO FISSO DI SEGRETERIA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: quota segreteria, tassa segreteria
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: SALA OPERATORIA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: sala chirurgica, blocco operatorio
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: SEDAZIONE COSCIENTE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: sedazione controllata, sedazione leggera
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: SUTURA, PUNTI DI
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: punti di sutura, sutura chirurgica
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: TERAPIA ANTIBIOTICA
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: trattamento antibiotico
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: TESSERA PAZIENTE
-CATEGORIA: TERAPIE NON RIMBORSABILI 
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: card paziente, badge paziente
-},
-{
-COD: TNON
-TIPOLOGIA: Termine sanitario
-TERMINE: UTILIZZO DISPOSITIVO DI ANCORAGGIO MEMBRANA
-CATEGORIA: TERAPIE NON RIMBORSABILI
-% RIMBORSO: 0%
-MASSIMALE SPECIFICO: 0€
-MASSIMALE GRUPPO: VEDI MASSIMALE SPECIFICO
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: utilizzo ancoraggio membrana, fissaggio membrana
-},
-{
-COD: 2.1.ALAB
-TIPOLOGIA: Termine sanitario
-TERMINE: DA DEFINIRE
-CATEGORIA: ANALISI CLINICHE
-% RIMBORSO: 30%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI:
-},
-{
-COD: 2.1.ALAB
-TIPOLOGIA: Termine sanitario
-TERMINE: DA DEFINIRE
-CATEGORIA: ESAMI DI ELABORATORIO
-% RIMBORSO: 30%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI:
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: MEDICAZIONE CHIRURGICA (RIMBORSABILE SOLO CON INTERVENTO)
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: MEDICAZIONE POST-OPERATORIA, SUTURA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: ECOCOLORDOPPLER
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ECO COLOR DOPPLER, ECOGRAFIA DOPPLER
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: BIOPSIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: PRELIEVO TESSUTALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: COLONSCOPIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ESAME COLONICO, COLONOSCOPIA DIGESTIVA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: ECG (ELETTROCARDIOGRAMMA)
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ELETTROCARDIOGRAMMA, ECG
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: ENDOSCOPIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ESAME ENDOSCOPICO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: TONOMETRIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: MISURAZIONE DELLA PRESSIONE INTRAOCULARE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: TOMOGRAFIA A EMISSIONE DI POSITRONI
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: PET
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: CEFALOMETRIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RADIOGRAFIA CEFALOMETRICA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: DIAGNOSI DEL MODELLO DI STUDIO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: VALUTAZIONE ORTODONTICA DEL MODELLO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: IMPRONTA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: IMPRESSIONE DENTALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: IMPRONTA PER APPLICAZIONE CORONA PROVVISORIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: IMPRESSIONE PER CORONA TEMPORANEA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: ORTOPANTOMOGRAFIA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: OPG, PANORAMICA DENTALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: SCANSIONE MASCELLA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: SCANSIONE 3D MASCELLA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: SONDAGGIO PARODONTALE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ESAME PARODONTALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: STATUS RADIOGRAFICO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RADIOGRAFIA COMPLETA, RADIOGRAFIA DI CONTROLLO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: TELECRANIO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RADIOGRAFIA LATERO-LATERALE DEL CRANIO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: RMN
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RISONANZA MAGNETICA NUCLEARE, RISONANZA MAGNETICA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: TOMOGRAFIA ASSIALE COMPUTERIZZATA
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: TAC, TOMOGRAFIA COMPUTERIZZATA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: CARTELLA PARODONTALE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: CARTELLA CLINICA PARODONTALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: CHECK UP ORTODONTICO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: VALUTAZIONE ORTODONTICA, VISITA ORTODONTICA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: DIAGNOSTICA PRE-SEDAZIONE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ESAME PRE-ANESTESICO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: STUDIO DEL CASO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ANALISI DEL CASO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: VALUTAZIONE FUNZIONALE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: VALUTAZIONE CLINICA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: OPT
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ORTOPANTOMOGRAFIA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: RADIOGRAFIA ENDORALE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RADIO ENDORALE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: RILEVAZIONE IMPRONTE
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: PRESA IMPRONTE
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: SVILUPPO MODELLI ORTODONTICI
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: REALIZZAZIONE MODELLI ORTODONTICI
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: SVILUPPO MODELLO GESSO CON HORTOB
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: REALIZZAZIONE MODELLO GESSO ORTODONTICO
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: STATUS FOTOGRAFICO
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: DOCUMENTAZIONE FOTOGRAFICA ORTODONTICA
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: CONE BEAM CT
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: CBCT, TAC DENTALE 3D
-},
-{
-COD: 2.2 DGN
-TIPOLOGIA: Termine sanitario
-TERMINE: DENTALSCAN
-CATEGORIA: DIAGNOSTICA
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: SCANSIONE DENTALE 3D
-},
-{
-COD: 2.3.TFISI
-TIPOLOGIA: Termine sanitario
-TERMINE: DA DEFINIRE
-CATEGORIA: TERAPIE FISICHE
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.3.TFISI
-TIPOLOGIA: Termine sanitario
-TERMINE: DA DEFINIRE
-CATEGORIA: TERAPIE RIABILITATIVE
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.4.INCH
-TIPOLOGIA: Termine sanitario
-TERMINE: DA DEFINIRE
-CATEGORIA: INTERVENTI CHIRURGICI AMBULATORIALI
-% RIMBORSO: 10%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.5.VSPE
-TIPOLOGIA: Termine sanitario
-TERMINE: PRIMA VISITA
-CATEGORIA: VISITE SPECIALISTICHE
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.5.VSPE
-TIPOLOGIA: Termine sanitario
-TERMINE:
-CATEGORIA: VISITE SPECIALISTICHE
-% RIMBORSO: 35%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.6.TPSI
-TIPOLOGIA: Termine sanitario
-TERMINE:
-CATEGORIA: PERCORSI PSICOLOGICI
-% RIMBORSO: 20%
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.7.VDSA
-TIPOLOGIA: Termine sanitario
-TERMINE:
-CATEGORIA: PERCORSI VALUTAZIONE  DSA
-% RIMBORSO: 30% COMPLETAMENTO  PERCORSO
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 2.7.VDSA
-TIPOLOGIA: Termine sanitario
-TERMINE:
-CATEGORIA: TRATTAMENTO DSA
-% RIMBORSO: 20% 
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 2) 1000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: 
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: INCAPPUCCIAMENTO DELLA POLPA INDIRETTO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: ?
-OPT: ?
-VISITA INIZIALE: ?
-VISITA FINALE: ?
-VALUTAZIONE SANITARIA: ?
-SINONIMI: CAPPIA PULPARE INDIRETTO; INDIRECT PULP CAPPING
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PULPOTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: ?
-OPT: ?
-VISITA INIZIALE: ?
-VISITA FINALE: ?
-VALUTAZIONE SANITARIA: ?
-SINONIMI: AMPUTAZIONE DELLA POLPA; POLPOTOMIA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: VESTIBOLOPLASTICA CON TRAPIANTO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: ?
-OPT: ?
-VISITA INIZIALE: ?
-VISITA FINALE: ?
-VALUTAZIONE SANITARIA: ?
-SINONIMI: CHIRURGIA DEL VESTIBOLO; AUMENTO DEL VESTIBOLO; TRAPIANTO DI MUCOSA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ALLACCIAMENTO DI DENTE INCLUSO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: APPLICAZIONE DEL BRACKET PER DISINCLUSIONE; ATTACCO ORTODONTICO SU DENTE INCLUSO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: APICECTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RESEZIONE APICALE; CHIRURGIA ENDODONTICA, AVULSIONE DENTE; DISINCLUSIONE CANINI; RIMOZIONE DENTE; RIZECTOMIA; RIZOTOMIA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ESTRAZIONE DENTE/RADICE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: AVULSIONE; EXODONZIA; ESTRATTO; RIMOZIONE  IMPIANTO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ESTRAZIONE DI IMPIANTO A VITE ENDOSSEO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: RIMOZIONE IMPIANTO; RIMOZIONE VITE ENDOSSEA; RIMOZIONE FIXTURE; RIMOZIONE DEL VECCHIO PONTE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: FRENULECTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: FRENULOPLASTICA; ESCISSIONE DEL FRENULO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: FRENULOTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: INCISIONE DEL FRENULO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: GERMECTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO 
-SINONIMI: ESTRAZIONE DEL GERME DENTARIO; AVULSIONE DEL GERME
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: INTERVENTO CHIRURGICO ENUCLEAZIONE CISTI
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: ENUCLEAZIONE CISTICA; ASPORTAZIONE CHIRURGICA DI CISTI; CISTECTOMIA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: MAGGIORAZIONE PER PRESTAZIONI IN SEDAZIONE ENDOVENOSA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: SEDAZIONE COSCIENTE; ANESTESIA ENDOVENOSA; IVS
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: OTTURAZIONE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RIPARAZIONE CARIE; COMPOSITO; FILLING; RESTAURO; BUILD UP PREPROTESICO; COMPOSITO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: RICOSTRUZIONE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RICOSTRUZIONE CORONALE; REBUILDING; RICOSTRUZIONE COMPOSITA; CHIRURGIA PREPROTESICA; RICOSTRUZIONE PRE-PROTESICA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: SIGILLATURA DEI SOLCHI
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: SIGILLANTI; SEALANT
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: DEVITALIZZAZIONE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: CURA CANALARE; TRATTAMENTO ENDODONTICO; TERAPIA CANALARE; RITRATTAMENTO CANALARE; TRATTAMENTO ENDODONTICO; RITRATTAMENTO MULTI ASINTOMATICO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ABLAZIONE TARTARO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: DETARTRASI; IGIENE ORALE; PULIZIA DEI DENTI; SCALING; ABT; DETARTRASI; FLUOROPROFILASSI
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: IMPIANTO A VITE (PER ELEMENTO - ESCLUSA PROTESIZZAZIONE)
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: INSERIMENTO IMPIANTO; FIXTURE; VITE ENDOSSEA; POSIZIONAMENTO IMPIANTO; COMPONENTISTICA IMPLANTOPROTESICA; IMPIANTO DENTALE OXY PREMIUM; IMPIANTO SOMMERSO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ALLUNGAMENTO CORONA CLINICA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: CHIRURGIA DI ALLUNGAMENTO CORONALE; CROWN LENGTHENING
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: CURETTAGE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: RASCHIAMENTO; CURETTAGGIO GENGIVALE; FULL MOUTH DISINFECTION
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: GENGIVECTOMIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RESEZIONE GENGIVALE; ESCISSIONE GENGIVALE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: LEMBO GENGIVALE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: CHIRURGIA A LEMBO; SOLLEVAMENTO DEL LEMBO; LEMBO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: LEVIGATURA RADICOLARE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI 
-SINONIMI: ROOT PLANING; ABLAZIONE TARTARO SOTTOGENGIVALE; LEVIGATURA SESTANTE; SCALING E ROOT PLANING
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: MUCO-GENGIVALE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: CHIRURGIA MUCO-GENGIVALE; INNESTO DI TESSUTO CONNETTIVO; INNESTO GENGIVALE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: BARRA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: BARRA PALATINA; BARRA DI ANCORAGGIO; DOLDER BAR
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: BOTTONE PER OVERDENTURE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: ATTACCO A BOTTONE; STUD ATTACHMENT; ATTACCO RADICOLARE; ATTACCO LOCATOR
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: BOTTONE RITENTIVO SU BARRA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: CLIP DI RITENZIONE; ATTACCO A SCIVOLAMENTO; ATTACCO SU BARRA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: CAPPETTA PER OVERDENTURE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: COPERCORONA; RADICE CAPPATA; CORONA A CAPPUCCIO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: CORONA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: CAPSULA (NO VISITA FINALE SE SOLO 1); CORONA FISSA; CAPPETTA; MARYLAND (NO VISITA FINALE SE SOLO 1)
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: CORONA PROVVISORIA (ANCHE RINFORZATA)
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: PROVVISORIO; CORONA TEMPORANEA; PROTESIZIONE PROVVISORIA; ELEMENTO PROVVISORIO RINFORZATO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: INTARSIO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: RESTAURO INDIRETTO; ONLAY; INLAY
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: MONCONE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: PERNO MONCONE; ANIMA RADICOLARE; CORE BUILD-UP; ABUTMENT; ATTACCO BALLATTACHMENT
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: MONCONE IMPLANTARE PROVVISORIO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: PILASTRO PROVVISORIO; MONCONE DI GUARIGIONE; ABUTMENT PROVVISORIO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: MONCONE PER IMPIANTO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI 
-SINONIMI: ABUTMENT; PILASTRO IMPLANTARE; TRANSFER
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PERNO MONCONE (SINGOLO O DOPPIO)
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: PERNO RADICOLARE FUSO; ANIMA COLATA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI AVVITATA PER “TORONTO BRIDGE”
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: PROTESI FISSA IBRIDA AVVITATA; TORONTO BRIDGE; PROTESI SU IMPIANTI AVVITATA; PONTE FISSO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI FISSA ALL ON FOUR
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: RIABILITAZIONE PROTESICA FISSA CON ELEMENTI  IN COMPOSITO SU IMPIANTI
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI TOTALE RIMOVIBILE PER OVERDENTURE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: OVERDENTURE; PROTESI RIMOVIBILE SU RADICI; PROTESI TOTALE CON ATTACCHI
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: SCOPERTURA IMPIANTO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: REINTERVENTO DI SCOPERTURA; SECONDO TEMPO CHIRURGICO; APERTURA IMPIANTO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: AGGIUNTA DI MICRORETE O RINFORZO SU PROTESI
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: AGGIUNTA DENTE ALLO SCHELETRATO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ATTACCO EXTRACORONALE SU SCHELETRATO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ATTACCO A PRESSIONE; ATTACCO DI PRECISIONE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ATTACCO INTRACORONALE SU SCHELETRATO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: ATTACCO A SCATOLA; ATTACCO DI PRECISIONE INTRACORONALE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: BARRA DI RINFORZO SU PROTESI RIMOVIBILE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RINFORZO METALLICO; RETE DI RINFORZO; RETINA RI RINFORZO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: CAPPETTA RADICOLARE CON ATTACCO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: COPERTURA RADICOLARE CON ATTACCO; OVERDENTURE SU RADICE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: GANCIO A FILO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: GANCIO IN LEGA; GANCIO ELABORATO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: GANCIO FUSO
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: GANCIO COLATO; GANCIO IN METALLO NOBILE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI MOBILE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: DENTIERA; PROTESI RIMOVIBILE; PROTESI MOBILE PARZIALE; VALPLAST
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI MOBILE TOTALE PROVVISORIA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: DENTIERA PROVVISORIA; PROTESI IMMEDIATA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: PROTESI SCHELETRATA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: SI
-VISITA FINALE: SI
-VALUTAZIONE SANITARIA: SI
-SINONIMI: SCHELETRATO; PROTESI PARZIALE RIMOVIBILE METALLICA; PPR; APPARECCHIO SCHELETRICO CON GANCI; ELEMENTO DENTARIO PER PROTESI SCHELETRICA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: RIBASATURA PROTESI
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RIFODERATURA; RIELABORAZIONE BASE PROTESICA; REBASE
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: RIPARAZIONE APPARECCHIO MOBILE O DI CONTENZIONE
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: AGGIUSTATURA; RIPRISTINO; SALDATURA APPARECCHIO
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: RIPARAZIONE CORONA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RICOSTRUZIONE DI CAPSULA; RIPRISTINO CORONA; AGGIUSTA CORONA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: RIPARAZIONE PROTESI MOBILE O SCHELETRATA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RIPARAZIONE DENTIERA; SALDATURA SCHELETRATO; AGGIUNTA DI UN DENTE; RIPARAZIONE FACCETTA
-},
-{
-COD: 1.1 ODONT
-TIPOLOGIA: Termine sanitario
-TERMINE: SALDATURA PROTESI FISSA
-CATEGORIA: ODONTOIATRIA
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: RICONGIUNZIONE PONTICOLO; RIPARAZIONE PONTE; SALDATURA DI UN ELEMENTO
-},
-{
-COD: 1.2 OCONT
-TIPOLOGIA: Termine sanitario
-TERMINE: ORTODONZIA CONTENZIONE
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: VEDI MASSIMALE GRUPPO
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: APPARECCHIO DI CONTENZIONE
-},
-{
-COD: 1.3 APP
-TIPOLOGIA: Termine sanitario
-TERMINE: ORTODONZIA FISSO/MOBILE
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: MAX 500€  ARCATA
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: APPARECCHIO FUNZIONALE; APPARECCHIO INTERCETTIVO; BANDAGGIO; DISGIUNTORE A 2 BANDE; ESPANSORE RAPIDO PALATALE
-},
-{
-COD: 1.3 APP
-TIPOLOGIA: Termine sanitario
-TERMINE: APPARECCHIO MOBILE
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: MAX 500€  ARCATA
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: - 
-},
-{
-COD: 1.3 APP
-TIPOLOGIA: Termine sanitario
-TERMINE: INVISALIGN
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: MAX 500€  ARCATA
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: SI
-VISITA INIZIALE: SI
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: SI
-SINONIMI: - 
-},
-{
-COD: 1.3 APP
-TIPOLOGIA: Termine sanitario
-TERMINE: SPLINTAGGIO
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: MAX 500€  ARCATA
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: SI
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI: CONTENZIONE FISSA
-},
-{
-COD: 1.3 APP
-TIPOLOGIA: Termine sanitario
-TERMINE: SPLINTAGGIO
-CATEGORIA: ORTODONZIA 
-% RIMBORSO: 10% ; > 2 ANNI ; > 4 ANNI 1° ISCRIZIONE 20% ; < 2 ANNI ; < 4 ANNI 1° ISCRIZIONE
-MASSIMALE SPECIFICO: MAX 500€  ARCATA
-MASSIMALE GRUPPO: 1) 3000€
-PREVENTIVO – PRESCRIZIONE: NO
-OPT: NO
-VISITA INIZIALE: NO
-VISITA FINALE: NO
-VALUTAZIONE SANITARIA: NO
-SINONIMI:
-  };
-    // Normalizza tutte le proprietà
-    const prestazioni = rawPrestazioni.map(normalizePrestazione);
-
-    // Elementi DOM
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const prestazioniList = document.getElementById('prestazioniList');
-
-    // Funzioni di ricerca
-    function fuzzySearch(query, text) {
-        if (!text) return false;
-        query = query.toLowerCase();
-        text = text.toString().toLowerCase();
-        if (!query) return false;
-        if (text.includes(query)) return true;
-        let index = 0;
-        for (const char of text) {
-            if (char === query[index]) {
-                index++;
-                if (index === query.length) return true;
-            }
-        }
-        return false;
+// Funzione per visualizzare i termini
+function displayTerms(terms) {
+    resultsContainer.innerHTML = '';
+    
+    if (terms.length === 0) {
+        resultsContainer.innerHTML = '<div class="no-results">Nessun risultato trovato. Prova con un\'altra ricerca.</div>';
+        return;
     }
-
-    function highlightMatch(text, query) {
-        if (!query || !text) return text;
-        const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
-        return text.toString().replace(regex, '<span class="match-highlight">$1</span>');
-    }
-
-    function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    function performSearch() {
-        const query = searchInput.value.trim();
-        if (!query) {
-            renderPrestazioni(prestazioni);
-            return;
-        }
-        const results = prestazioni.filter(item => {
-            if (fuzzySearch(query, item.termine)) return true;
-            if (item.cod && fuzzySearch(query, item.cod)) return true;
-            if (item.tipologia && fuzzySearch(query, item.tipologia)) return true;
-            if (item.categoria && fuzzySearch(query, item.categoria)) return true;
-            if (item.sinonimi && Array.isArray(item.sinonimi)) {
-                return item.sinonimi.some(sinonimo => fuzzySearch(query, sinonimo));
-            }
-            return false;
-        });
-        renderPrestazioni(results, query);
-    }
-
-    function renderPrestazioni(prestazioniToRender, query = '') {
-        if (prestazioniToRender.length === 0) {
-            prestazioniList.innerHTML = `
-                <div class="no-results">
-                    <i class="fas fa-search-minus fa-3x"></i>
-                    <h3>Nessun risultato trovato</h3>
-                    <p>La tua ricerca non ha prodotto risultati</p>
-                </div>
-            `;
-            return;
-        }
-        let html = '';
-        prestazioniToRender.forEach(item => {
-            const highlightedCod = query ? highlightMatch(item.cod, query) : item.cod;
-            const highlightedTipologia = query ? highlightMatch(item.tipologia, query) : item.tipologia;
-            const highlightedTermine = query ? highlightMatch(item.termine, query) : item.termine;
-            const highlightedCat = query ? highlightMatch(item.categoria, query) : item.categoria;
-            const highlightedRimborso = query ? highlightMatch(item.rimborso, query) : item.rimborso;
-            const highlightedMassimaleSpec = query ? highlightMatch(item.massimale_specifico, query) : item.massimale_specifico;
-            const highlightedMassimaleGruppo = query ? highlightMatch(item.massimale_gruppo, query) : item.massimale_gruppo;
-            const highlightedPrevPrescr = query ? highlightMatch(item.preventivo_prescrizione, query) : item.preventivo_prescrizione;
-            const highlightedOpt = query ? highlightMatch(item.opt, query) : item.opt;
-            const highlightedVisitaIniz = query ? highlightMatch(item.visita_iniziale, query) : item.visita_iniziale;
-            const highlightedVisitaFin = query ? highlightMatch(item.visita_finale, query) : item.visita_finale;
-            const highlightedValutazione = query ? highlightMatch(item.valutazione_sanitaria, query) : item.valutazione_sanitaria;
-            const highlightedSyn = (item.sinonimi||[]).map(s => query ? highlightMatch(s, query) : s).join(", ");
-
-            html += `
-                <div class="card">
-                    <h3>${highlightedTermine}</h3>
-                    <div class="prestazione-details">
-                        <div><strong>COD:</strong> ${highlightedCod}</div>
-                        <div><strong>TIPOLOGIA:</strong> ${highlightedTipologia}</div>
-                        <div><strong>TERMINE:</strong> ${highlightedTermine}</div>
-                        <div><strong>CATEGORIA:</strong> ${highlightedCat}</div>
-                        <div><strong>% RIMBORSO:</strong> ${highlightedRimborso}</div>
-                        <div><strong>MASSIMALE SPECIFICO:</strong> ${highlightedMassimaleSpec}</div>
-                        <div><strong>MASSIMALE GRUPPO:</strong> ${highlightedMassimaleGruppo}</div>
-                        <div><strong>PREVENTIVO – PRESCRIZIONE:</strong> ${highlightedPrevPrescr}</div>
-                        <div><strong>OPT:</strong> ${highlightedOpt}</div>
-                        <div><strong>VISITA INIZIALE:</strong> ${highlightedVisitaIniz}</div>
-                        <div><strong>VISITA FINALE:</strong> ${highlightedVisitaFin}</div>
-                        <div><strong>VALUTAZIONE SANITARIA:</strong> ${highlightedValutazione}</div>
-                        <div><strong>SINONIMI:</strong> ${highlightedSyn}</div>
-                    </div>
-                </div>
-            `;
-        });
-        prestazioniList.innerHTML = html;
-    }
-
-    // Inizializza l'app
-    renderPrestazioni(prestazioni);
-
-    // Aggiungi event listeners
-    searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keyup', (e) => {
-        if (e.key === 'Enter') {
-            performSearch();
-        }
+    
+    terms.forEach(term => {
+        const termCard = document.createElement('div');
+        termCard.classList.add('term-card');
+        
+        // Evidenziazione del testo cercato
+        const highlightText = (text, search) => {
+            if (!search || !text) return text || '';
+            const regex = new RegExp(`(${search})`, 'gi');
+            return text.toString().replace(regex, '<span class="highlight">$1</span>');
+        };
+        
+        termCard.innerHTML = `
+            <h3 class="term-name">${highlightText(term.termine, currentSearchTerm)}</h3>
+            <p class="term-detail"><span class="detail-label">COD:</span> ${highlightText(term.cod, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Categoria:</span> ${term.categoria}</p>
+            <p class="term-detail"><span class="detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Max Spec:</span> ${highlightText(term.maxSpec, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Valutazione Sanitaria:</span> ${highlightText(term.valutazioneSanitaria, currentSearchTerm)}</p>
+            <p class="term-detail"><span class="detail-label">Sinonimi:</span> ${highlightText(term.sinonimi, currentSearchTerm)}</p>
+        `;
+        
+        resultsContainer.appendChild(termCard);
     });
 }
 
-// Avvia l'applicazione al caricamento della pagina
-document.addEventListener('DOMContentLoaded', initApp);
+// Funzione per aggiornare le statistiche
+function updateStats(count) {
+    termsCount.textContent = `${count} termini trovati`;
+}
+
+// Imposta il link per il pulsante "Aggiungi termine" (da aggiornare in seguito)
+addTermButton.href = "https://forms.gle/sJSJB6KisLCbiVbV6"; // Sostituire con il link corretto quando disponibile
+
+// Aggiungi gestione click per il pulsante (opzionale)
+addTermButton.addEventListener('click', function(e) {
+    // Qui puoi aggiungere eventuali azioni prima del reindirizzamento
+    console.log('Reindirizzamento alla pagina di aggiunta termine');
+    // Il reindirizzamento avverrà tramite l'href del link
+});
