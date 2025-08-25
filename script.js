@@ -1,3 +1,20 @@
+// Password di accesso
+const PASSWORD_CORRETTA = "Fondazioneatm2025";
+
+// Elementi DOM per l'accesso
+const accessoContainer = document.getElementById('accessoContainer');
+const appContainer = document.getElementById('appContainer');
+const passwordInput = document.getElementById('passwordInput');
+const accediButton = document.getElementById('accediButton');
+const erroreAccesso = document.getElementById('erroreAccesso');
+
+// Elementi DOM per l'app
+const searchInput = document.getElementById('searchInput');
+const searchButton = document.getElementById('searchButton');
+const resultsContainer = document.getElementById('resultsContainer');
+const termsCount = document.getElementById('termsCount');
+const addTermButton = document.getElementById('addTermButton');
+
 // Dizionario dei termini sanitari con tutte le voci richieste (senza descrizione)
 const dizionarioSanitario = [
     {
@@ -2461,31 +2478,60 @@ const dizionarioSanitario = [
         sinonimi: " "
     }
 ];
-
-// Elementi DOM
-const searchInput = document.getElementById('searchInput');
-const searchButton = document.getElementById('searchButton');
-const resultsContainer = document.getElementById('resultsContainer');
-const termsCount = document.getElementById('termsCount');
-const addTermButton = document.getElementById('addTermButton');
-
 // Variabile per il termine di ricerca
 let currentSearchTerm = '';
 
-// Inizializza la visualizzazione
-displayTerms(dizionarioSanitario);
-updateStats(dizionarioSanitario.length);
+// Funzione per verificare l'accesso
+function verificaAccesso() {
+    const passwordInserita = passwordInput.value;
+    
+    if (passwordInserita === PASSWORD_CORRETTA) {
+        // Accesso consentito
+        accessoContainer.classList.add('hidden');
+        appContainer.classList.remove('hidden');
+        // Inizializza l'app
+        displayTerms(dizionarioSanitario);
+        updateStats(dizionarioSanitario.length);
+    } else {
+        // Accesso negato
+        erroreAccesso.textContent = "Password errata. Riprova.";
+        passwordInput.value = "";
+        passwordInput.focus();
+    }
+}
 
-// Event listeners
-searchInput.addEventListener('input', function() {
-    currentSearchTerm = this.value.toLowerCase();
-    filterTerms();
+// Gestione eventi per l'accesso
+passwordInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        verificaAccesso();
+    }
 });
 
-searchButton.addEventListener('click', () => {
-    currentSearchTerm = searchInput.value.toLowerCase();
-    filterTerms();
-});
+accediButton.addEventListener('click', verificaAccesso);
+
+// Inizializza l'app dopo l'accesso
+function initApp() {
+    // Event listeners per la ricerca
+    searchInput.addEventListener('input', function() {
+        currentSearchTerm = this.value.toLowerCase();
+        filterTerms();
+    });
+
+    searchButton.addEventListener('click', () => {
+        currentSearchTerm = searchInput.value.toLowerCase();
+        filterTerms();
+    });
+
+    // Imposta il link per il pulsante "Aggiungi termine"
+    addTermButton.href = "https://forms.gle/SmBeGsHDuRY7fqDH8"; // Sostituire con il link corretto quando disponibile
+
+    // Aggiungi gestione click per il pulsante (opzionale)
+    addTermButton.addEventListener('click', function(e) {
+        // Qui puoi aggiungere eventuali azioni prima del reindirizzamento
+        console.log('Reindirizzamento alla pagina di aggiunta termine');
+        // Il reindirizzamento avverrà tramite l'href del link
+    });
+}
 
 // Funzione per filtrare i termini in base alla ricerca
 function filterTerms() {
@@ -2550,12 +2596,5 @@ function updateStats(count) {
     termsCount.textContent = `${count} termini trovati`;
 }
 
-// Imposta il link per il pulsante "Aggiungi termine" (da aggiornare in seguito)
-addTermButton.href = "https://forms.gle/sJSJB6KisLCbiVbV6"; // Sostituire con il link corretto quando disponibile
-
-// Aggiungi gestione click per il pulsante (opzionale)
-addTermButton.addEventListener('click', function(e) {
-    // Qui puoi aggiungere eventuali azioni prima del reindirizzamento
-    console.log('Reindirizzamento alla pagina di aggiunta termine');
-    // Il reindirizzamento avverrà tramite l'href del link
-});
+// L'app verrà inizializzata solo dopo l'accesso corretto
+// Non è necessario chiamare initApp() qui perché verrà chiamata dopo la verifica della password
