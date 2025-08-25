@@ -2499,7 +2499,7 @@ function verificaAccesso() {
     }
 }
 
-// Gestione eventi para l'accesso
+// Gestione eventi per l'accesso
 passwordInput.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         verificaAccesso();
