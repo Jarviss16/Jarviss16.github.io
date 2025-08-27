@@ -2565,20 +2565,34 @@ function displayTerms(terms) {
         };
         
         termCard.innerHTML = `
+            <i class="fas fa-chevron-down expand-icon"></i>
             <h3 class="term-name">${highlightText(term.termine, currentSearchTerm)}</h3>
-            <p class="term-detail"><span class="detail-label">COD:</span> ${highlightText(term.cod, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Categoria:</span> ${term.categoria}</p>
-            <p class="term-detail"><span class="detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Max Spec:</span> ${highlightText(term.maxSpec, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Valutazione Sanitaria:</span> ${highlightText(term.valutazioneSanitaria, currentSearchTerm)}</p>
-            <p class="term-detail"><span class="detail-label">Sinonimi:</span> ${highlightText(term.sinonimi, currentSearchTerm)}</p>
+            <div class="term-detail">
+                <span class="detail-label">COD:</span> ${highlightText(term.cod, currentSearchTerm)}
+            </div>
+            <div class="term-detail">
+                <span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
+            </div>
+            <div class="term-detail">
+                <span class="detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}
+            </div>
+            <div class="extra-details">
+                <div class="term-detail"><span class="detail-label">Categoria:</span> ${term.categoria}</div>
+                <div class="term-detail"><span class="detail-label">Max Spec:</span> ${highlightText(term.maxSpec, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Valutazione Sanitaria:</span> ${highlightText(term.valutazioneSanitaria, currentSearchTerm)}</div>
+                <div class="term-detail"><span class="detail-label">Sinonimi:</span> ${highlightText(term.sinonimi, currentSearchTerm)}</div>
+            </div>
         `;
+        
+        // Aggiungi evento click per espandere/ridurre la card
+        termCard.addEventListener('click', function() {
+            this.classList.toggle('expanded');
+        });
         
         resultsContainer.appendChild(termCard);
     });
