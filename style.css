@@ -240,19 +240,20 @@ h1 {
 
 .results-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
 }
 
 .term-card {
     background: white;
     border-radius: 12px;
-    padding: 25px;
+    padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     border-left: 5px solid #f57c00;
+    cursor: pointer;
 }
 
 .term-card:hover {
@@ -260,23 +261,50 @@ h1 {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
 }
 
+.term-card.expanded {
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
 .term-name {
     color: #e65100;
     margin-bottom: 15px;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     padding-bottom: 10px;
     border-bottom: 2px solid #ffe0b2;
 }
 
 .term-detail {
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     display: flex;
 }
 
 .detail-label {
     font-weight: bold;
     color: #5d4037;
-    min-width: 180px;
+    min-width: 120px;
+}
+
+.extra-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.term-card.expanded .extra-details {
+    max-height: 1000px;
+}
+
+.expand-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #f57c00;
+    transition: transform 0.3s ease;
+}
+
+.term-card.expanded .expand-icon {
+    transform: rotate(180deg);
 }
 
 .no-results {
@@ -332,7 +360,7 @@ footer {
     }
     
     .detail-label {
-        min-width: 140px;
+        min-width: 100px;
     }
     
     .accesso-box {
@@ -348,5 +376,13 @@ footer {
         width: 100%;
         justify-content: center;
         padding: 12px 24px;
+    }
+    
+    .term-card {
+        padding: 15px;
+    }
+    
+    .term-card.expanded {
+        padding: 20px;
     }
 }
