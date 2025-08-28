@@ -14,6 +14,11 @@ const searchButton = document.getElementById('searchButton');
 const resultsContainer = document.getElementById('resultsContainer');
 const termsCount = document.getElementById('termsCount');
 
+// Elementi DOM per il modal
+const termModal = document.getElementById('termModal');
+const modalContent = document.getElementById('modalContent');
+const closeModal = document.querySelector('.close-modal');
+
 // Dizionario dei termini sanitari
 const dizionarioSanitario = [
     {
@@ -2521,6 +2526,18 @@ function initApp() {
         filterTerms();
     });
     
+    // Event listener per chiudere il modal
+    closeModal.addEventListener('click', () => {
+        termModal.style.display = 'none';
+    });
+    
+    // Chiudi il modal cliccando fuori dal contenuto
+    window.addEventListener('click', (event) => {
+        if (event.target === termModal) {
+            termModal.style.display = 'none';
+        }
+    });
+    
     // Visualizza i termini iniziali
     displayTerms(dizionarioSanitario);
     updateStats(dizionarioSanitario.length);
@@ -2565,7 +2582,6 @@ function displayTerms(terms) {
         };
         
         termCard.innerHTML = `
-            <i class="fas fa-chevron-down expand-icon"></i>
             <h3 class="term-name">${highlightText(term.termine, currentSearchTerm)}</h3>
             <div class="term-detail">
                 <span class="detail-label">COD:</span> ${highlightText(term.cod, currentSearchTerm)}
@@ -2576,26 +2592,70 @@ function displayTerms(terms) {
             <div class="term-detail">
                 <span class="detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}
             </div>
-            <div class="extra-details">
-                <div class="term-detail"><span class="detail-label">Categoria:</span> ${term.categoria}</div>
-                <div class="term-detail"><span class="detail-label">Max Spec:</span> ${highlightText(term.maxSpec, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Valutazione Sanitaria:</span> ${highlightText(term.valutazioneSanitaria, currentSearchTerm)}</div>
-                <div class="term-detail"><span class="detail-label">Sinonimi:</span> ${highlightText(term.sinonimi, currentSearchTerm)}</div>
+            <div class="view-details">
+                <i class="fas fa-expand-alt"></i> Clicca per vedere tutti i dettagli
             </div>
         `;
         
-        // Aggiungi evento click per espandere/ridurre la card
+        // Aggiungi evento click per aprire il modal con i dettagli
         termCard.addEventListener('click', function() {
-            this.classList.toggle('expanded');
+            openModal(term);
         });
         
         resultsContainer.appendChild(termCard);
     });
+}
+
+// Funzione per aprire il modal con i dettagli completi
+function openModal(term) {
+    // Evidenziazione del testo cercato
+    const highlightText = (text, search) => {
+        if (!search || !text) return text || '';
+        const regex = new RegExp(`(${search})`, 'gi');
+        return text.toString().replace(regex, '<span class="highlight">$1</span>');
+    };
+    
+    modalContent.innerHTML = `
+        <h2 class="modal-term-name">${highlightText(term.termine, currentSearchTerm)}</h2>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">COD:</span> ${highlightText(term.cod, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Categoria:</span> ${term.categoria}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Max Spec:</span> ${highlightText(term.maxSpec, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Valutazione Sanitaria:</span> ${highlightText(term.valutazioneSanitaria, currentSearchTerm)}
+        </div>
+        <div class="modal-term-detail">
+            <span class="modal-detail-label">Sinonimi:</span> ${highlightText(term.sinonimi, currentSearchTerm)}
+        </div>
+    `;
+    
+    termModal.style.display = 'block';
 }
 
 // Funzione per aggiornare le statistiche
