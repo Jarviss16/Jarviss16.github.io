@@ -2636,7 +2636,7 @@ function openModal(term) {
             <span class="modal-detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.PrevPres, currentSearchTerm)}
+            <span class="modal-detail-label">Prev Pres:</span> ${highlightText(term.PrevPres, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}
