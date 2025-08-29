@@ -14,10 +14,11 @@ const searchButton = document.getElementById('searchButton');
 const resultsContainer = document.getElementById('resultsContainer');
 const termsCount = document.getElementById('termsCount');
 
-// Elementi DOM per il modal
+// Elementi DOM para il modal
 const termModal = document.getElementById('termModal');
 const modalContent = document.getElementById('modalContent');
 const closeModal = document.querySelector('.close-modal');
+
 
 // Dizionario dei termini sanitari
 const dizionarioSanitario = [
@@ -2549,12 +2550,24 @@ function filterTerms() {
     
     // Filtra per termine di ricerca
     if (currentSearchTerm) {
-        filteredTerms = filteredTerms.filter(term => 
-            term.termine.toLowerCase().includes(currentSearchTerm) ||
-            term.sinonimi.toLowerCase().includes(currentSearchTerm) ||
-            term.cod.toLowerCase().includes(currentSearchTerm) ||
-            term.tipologia.toLowerCase().includes(currentSearchTerm)
-        );
+        filteredTerms = filteredTerms.filter(term => {
+            // Cerca in tutti i campi di testo
+            return (
+                term.termine.toLowerCase().includes(currentSearchTerm) ||
+                term.cod.toLowerCase().includes(currentSearchTerm) ||
+                term.tipologia.toLowerCase().includes(currentSearchTerm) ||
+                term.categoria.toLowerCase().includes(currentSearchTerm) ||
+                term.rimborso.toLowerCase().includes(currentSearchTerm) ||
+                term.maxSpec.toLowerCase().includes(currentSearchTerm) ||
+                term.maxGrup.toLowerCase().includes(currentSearchTerm) ||
+                term.preventivoPrescrizione.toLowerCase().includes(currentSearchTerm) ||
+                term.opt.toLowerCase().includes(currentSearchTerm) ||
+                term.visitaIniziale.toLowerCase().includes(currentSearchTerm) ||
+                term.visitaFinale.toLowerCase().includes(currentSearchTerm) ||
+                term.valutazioneSanitaria.toLowerCase().includes(currentSearchTerm) ||
+                term.sinonimi.toLowerCase().includes(currentSearchTerm)
+            );
+        });
     }
     
     displayTerms(filteredTerms);
@@ -2588,6 +2601,9 @@ function displayTerms(terms) {
             </div>
             <div class="term-detail">
                 <span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
+            </div>
+            <div class="term-detail">
+                <span class="detail-label">Categoria:</span> ${highlightText(term.categoria, currentSearchTerm)}
             </div>
             <div class="term-detail">
                 <span class="detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}
@@ -2624,7 +2640,7 @@ function openModal(term) {
             <span class="modal-detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Categoria:</span> ${term.categoria}
+            <span class="modal-detail-label">Categoria:</span> ${highlightText(term.categoria, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">Rimborso:</span> ${highlightText(term.rimborso, currentSearchTerm)}
@@ -2636,7 +2652,7 @@ function openModal(term) {
             <span class="modal-detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Prev Pres:</span> ${highlightText(term.Prevpres, currentSearchTerm)}
+            <span class="modal-detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}
