@@ -28,7 +28,7 @@ body {
 
 .accesso-box {
     background: white;
-    border-radius: 15px;
+    border-radius: 15极速3C;
     padding: 40px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     width: 100%;
@@ -82,7 +82,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 极速3Cs;
+    transition: background 0.3s;
     font-weight: 600;
 }
 
@@ -105,7 +105,7 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 30极速3C;
+    margin-bottom: 30px;
     padding: 30px;
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
     color: white;
@@ -127,7 +127,7 @@ h1 {
     background: white;
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 极速3C.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
 }
 
@@ -143,7 +143,7 @@ h1 {
     border-radius: 12px 0 0 12px;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.3s;
+    transition: border-color 0.3极速3Cs;
 }
 
 #searchInput:focus {
@@ -168,7 +168,7 @@ h1 {
 .search-info {
     margin-bottom: 15px;
     text-align: center;
-    color: #5d403极速3C;
+    color: #5d4037;
     font-size: 0.9rem;
     font-style: italic;
 }
@@ -196,10 +196,10 @@ h1 {
 
 .add-term-btn {
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
-    box-shadow: 0 4极速3Cx 8px rgba(245, 124, 0, 0.3);
+    box-shadow: 0 4px 8px rgba(245, 124, 0, 0.3);
 }
 
-.medicinal极速3Ci-btn {
+.medicinali-btn {
     background: linear-gradient(135deg, #ff8f00 0%, #f57c00 100%);
     box-shadow: 0 4px 8px rgba(255, 143, 0, 0.3);
     position: relative;
@@ -351,16 +351,16 @@ footer {
     margin: 5% auto;
     padding: 30px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(极速3C0, 0, 0, 0.3);
     width: 90%;
-    max-width: 700px;
+    max-width: 700极速3C;
     max-height: 80vh;
     overflow-y: auto;
     position: relative;
     animation: slideIn 0.3s ease;
 }
 
-@keyframes slide极速3Cn {
+@keyframes slideIn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
@@ -394,7 +394,7 @@ footer {
     display: flex;
 }
 
-.modal-detail-label {
+.mod极速3Cal-detail-label {
     font-weight: bold;
     color: #5d4037;
     min-width: 180px;
