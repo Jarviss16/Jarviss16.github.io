@@ -16,7 +16,7 @@ const termsCount = document.getElementById('termsCount');
 const searchInfo = document.getElementById('searchInfo');
 
 // Elementi DOM per il modal
-const termModal = document.getElementById极速3C('termModal');
+const termModal = document.getElementById('termModal');
 const modalContent = document.getElementById('modalContent');
 const closeModal = document.querySelector('.close-modal');
 
@@ -2563,7 +2563,7 @@ function levenshteinDistance(a, b) {
     for (i = 1; i <= b.length; i++) {
         for (j = 1; j <= a.length; j++) {
             if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                matrix[i][极速3C] = matrix[i - 1][j - 1];
+                matrix[i][j] = matrix[i - 1][j - 1];
             } else {
                 matrix[i][j] = Math.min(
                     matrix[i - 1][j - 1] + 1,
@@ -2633,7 +2633,7 @@ function filterTerms() {
                     fuzzySearch(term.rimborso, currentSearchTerm, 0.8) ||
                     fuzzySearch(term.maxSpec, currentSearchTerm, 0.7) ||
                     fuzzySearch(term.maxGrup, currentSearchTerm, 0.7) ||
-                    fuzzySearch(term.preventivoPrescrizione, currentSearchTerm, 0.6) ||
+                    fuzzySearch(term.Prevpres, currentSearchTerm, 0.6) ||
                     fuzzySearch(term.opt, currentSearchTerm, 0.8) ||
                     fuzzySearch(term.visitaIniziale, currentSearchTerm, 0.8) ||
                     fuzzySearch(term.visitaFinale, currentSearchTerm, 0.8) ||
@@ -2693,7 +2693,7 @@ function displayTerms(terms) {
             <div class="term-detail">
                 <span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
             </div>
-            <极速3Cdiv class="term-detail">
+            <div class="term-detail">
                 <span class="detail-label">Categoria:</span> ${highlightText(term.categoria, currentSearchTerm)}
             </div>
             <div class="term-detail">
@@ -2736,13 +2736,13 @@ function openModal(term) {
             <span class="modal-detail-label">Max Grup:</span> ${highlightText(term.maxGrup, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Preventivo-Prescrizione:</span> ${highlightText(term.preventivoPrescrizione, currentSearchTerm)}
+            <span class="modal-detail-label">Prevpres:</span> ${highlightText(term.Prevpres, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIn极速3Ciale, currentSearchTerm)}
+            <span class="modal-detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}
