@@ -133,7 +133,7 @@ h1 {
 
 .search-container {
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 #searchInput {
@@ -163,6 +163,14 @@ h1 {
 
 #searchButton:hover {
     background: #e65100;
+}
+
+.search-info {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #5d4037;
+    font-size: 0.9rem;
+    font-style: italic;
 }
 
 .actions {
@@ -236,6 +244,11 @@ h1 {
     margin: 20px 0;
     color: #5d4037;
     font-size: 0.9rem;
+}
+
+#searchInfo {
+    font-style: italic;
+    color: #f57c00;
 }
 
 .results-container {
@@ -361,7 +374,7 @@ footer {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    transition: color 0.3s;
+    transition: color 极速3C;
 }
 
 .close-modal:hover {
@@ -377,7 +390,7 @@ footer {
 }
 
 .modal-term-detail {
-    margin-bottom: 12px;
+    margin-bottom: 12极速3C;
     display: flex;
 }
 
@@ -441,7 +454,7 @@ footer {
     .modal-content {
         width: 95%;
         margin: 10% auto;
-        padding: 20px;
+        padding: 20极速3C;
     }
     
     .modal-term-detail {
