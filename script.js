@@ -13,12 +13,12 @@ const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const resultsContainer = document.getElementById('resultsContainer');
 const termsCount = document.getElementById('termsCount');
+const searchInfo = document.getElementById('searchInfo');
 
-// Elementi DOM para il modal
-const termModal = document.getElementById('termModal');
+// Elementi DOM per il modal
+const termModal = document.getElementById极速3C('termModal');
 const modalContent = document.getElementById('modalContent');
 const closeModal = document.querySelector('.close-modal');
-
 
 // Dizionario dei termini sanitari
 const dizionarioSanitario = [
@@ -2544,34 +2544,130 @@ function initApp() {
     updateStats(dizionarioSanitario.length);
 }
 
+// Funzione per calcolare la distanza di Levenshtein (per fuzzy search)
+function levenshteinDistance(a, b) {
+    const matrix = [];
+    let i, j;
+
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    for (i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    for (j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    for (i = 1; i <= b.length; i++) {
+        for (j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][极速3C] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+}
+
+// Funzione per la ricerca fuzzy
+function fuzzySearch(text, pattern, threshold = 0.8) {
+    if (!text || !pattern) return false;
+    
+    const textLower = text.toString().toLowerCase();
+    const patternLower = pattern.toLowerCase();
+    
+    // Se il pattern è vuoto, restituisci true
+    if (patternLower.length === 0) return true;
+    
+    // Cerca corrispondenze esatte
+    if (textLower.includes(patternLower)) return true;
+    
+    // Se il pattern è troppo corto, usa la ricerca per inizio parola
+    if (patternLower.length <= 2) {
+        const words = textLower.split(/\s+/);
+        for (const word of words) {
+            if (word.startsWith(patternLower)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Per pattern più lunghi, usa la distanza di Levenshtein
+    const distance = levenshteinDistance(patternLower, textLower);
+    const maxLength = Math.max(patternLower.length, textLower.length);
+    const similarity = 1 - distance / maxLength;
+    
+    return similarity >= threshold;
+}
+
 // Funzione per filtrare i termini in base alla ricerca
 function filterTerms() {
     let filteredTerms = dizionarioSanitario;
     
+    // Reset delle informazioni di ricerca
+    searchInfo.textContent = '';
+    
     // Filtra per termine di ricerca
     if (currentSearchTerm) {
-        filteredTerms = filteredTerms.filter(term => {
-            // Cerca in tutti i campi di testo
-            return (
-                term.termine.toLowerCase().includes(currentSearchTerm) ||
-                term.cod.toLowerCase().includes(currentSearchTerm) ||
-                term.tipologia.toLowerCase().includes(currentSearchTerm) ||
-                term.categoria.toLowerCase().includes(currentSearchTerm) ||
-                term.rimborso.toLowerCase().includes(currentSearchTerm) ||
-                term.maxSpec.toLowerCase().includes(currentSearchTerm) ||
-                term.maxGrup.toLowerCase().includes(currentSearchTerm) ||
-                term.preventivoPrescrizione.toLowerCase().includes(currentSearchTerm) ||
-                term.opt.toLowerCase().includes(currentSearchTerm) ||
-                term.visitaIniziale.toLowerCase().includes(currentSearchTerm) ||
-                term.visitaFinale.toLowerCase().includes(currentSearchTerm) ||
-                term.valutazioneSanitaria.toLowerCase().includes(currentSearchTerm) ||
-                term.sinonimi.toLowerCase().includes(currentSearchTerm)
-            );
-        });
+        // Se la ricerca è troppo corta (meno di 2 caratteri), non filtrare
+        if (currentSearchTerm.length < 1) {
+            searchInfo.textContent = 'Inserisci almeno 1 carattere per la ricerca';
+            filteredTerms = [];
+        } else {
+            filteredTerms = filteredTerms.filter(term => {
+                // Cerca in tutti i campi di testo con ricerca fuzzy
+                return (
+                    fuzzySearch(term.termine, currentSearchTerm, 0.6) ||
+                    fuzzySearch(term.cod, currentSearchTerm, 0.8) ||
+                    fuzzySearch(term.tipologia, currentSearchTerm, 0.7) ||
+                    fuzzySearch(term.categoria, currentSearchTerm, 0.7) ||
+                    fuzzySearch(term.rimborso, currentSearchTerm, 0.8) ||
+                    fuzzySearch(term.maxSpec, currentSearchTerm, 0.7) ||
+                    fuzzySearch(term.maxGrup, currentSearchTerm, 0.7) ||
+                    fuzzySearch(term.preventivoPrescrizione, currentSearchTerm, 0.6) ||
+                    fuzzySearch(term.opt, currentSearchTerm, 0.8) ||
+                    fuzzySearch(term.visitaIniziale, currentSearchTerm, 0.8) ||
+                    fuzzySearch(term.visitaFinale, currentSearchTerm, 0.8) ||
+                    fuzzySearch(term.valutazioneSanitaria, currentSearchTerm, 0.6) ||
+                    fuzzySearch(term.sinonimi, currentSearchTerm, 0.6)
+                );
+            });
+            
+            // Informazioni sulla ricerca
+            if (filteredTerms.length > 0) {
+                searchInfo.textContent = `Trovati ${filteredTerms.length} risultati per: "${currentSearchTerm}"`;
+            } else {
+                searchInfo.textContent = `Nessun risultato per: "${currentSearchTerm}". Prova con un termine più generico.`;
+            }
+        }
+    } else {
+        // Se non c'è testo di ricerca, mostra tutti i termini
+        searchInfo.textContent = 'Mostrando tutti i termini';
     }
     
     displayTerms(filteredTerms);
     updateStats(filteredTerms.length);
+}
+
+// Funzione per evidenziare il testo nelle carte
+function highlightText(text, search) {
+    if (!search || !text || search.length < 1) return text || '';
+    
+    try {
+        const regex = new RegExp(`(${search})`, 'gi');
+        return text.toString().replace(regex, '<span class="highlight">$1</span>');
+    } catch (e) {
+        return text;
+    }
 }
 
 // Funzione per visualizzare i termini
@@ -2579,20 +2675,15 @@ function displayTerms(terms) {
     resultsContainer.innerHTML = '';
     
     if (terms.length === 0) {
-        resultsContainer.innerHTML = '<div class="no-results">Nessun risultato trovato. Prova con un\'altra ricerca.</div>';
+        if (currentSearchTerm && currentSearchTerm.length >= 1) {
+            resultsContainer.innerHTML = '<div class="no-results">Nessun risultato trovato. Prova con un\'altra ricerca.</div>';
+        }
         return;
     }
     
     terms.forEach(term => {
         const termCard = document.createElement('div');
         termCard.classList.add('term-card');
-        
-        // Evidenziazione del testo cercato
-        const highlightText = (text, search) => {
-            if (!search || !text) return text || '';
-            const regex = new RegExp(`(${search})`, 'gi');
-            return text.toString().replace(regex, '<span class="highlight">$1</span>');
-        };
         
         termCard.innerHTML = `
             <h3 class="term-name">${highlightText(term.termine, currentSearchTerm)}</h3>
@@ -2602,7 +2693,7 @@ function displayTerms(terms) {
             <div class="term-detail">
                 <span class="detail-label">Tipologia:</span> ${highlightText(term.tipologia, currentSearchTerm)}
             </div>
-            <div class="term-detail">
+            <极速3Cdiv class="term-detail">
                 <span class="detail-label">Categoria:</span> ${highlightText(term.categoria, currentSearchTerm)}
             </div>
             <div class="term-detail">
@@ -2624,13 +2715,6 @@ function displayTerms(terms) {
 
 // Funzione per aprire il modal con i dettagli completi
 function openModal(term) {
-    // Evidenziazione del testo cercato
-    const highlightText = (text, search) => {
-        if (!search || !text) return text || '';
-        const regex = new RegExp(`(${search})`, 'gi');
-        return text.toString().replace(regex, '<span class="highlight">$1</span>');
-    };
-    
     modalContent.innerHTML = `
         <h2 class="modal-term-name">${highlightText(term.termine, currentSearchTerm)}</h2>
         <div class="modal-term-detail">
@@ -2658,7 +2742,7 @@ function openModal(term) {
             <span class="modal-detail-label">OPT:</span> ${highlightText(term.opt, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
-            <span class="modal-detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIniziale, currentSearchTerm)}
+            <span class="modal-detail-label">Visita Iniziale:</span> ${highlightText(term.visitaIn极速3Ciale, currentSearchTerm)}
         </div>
         <div class="modal-term-detail">
             <span class="modal-detail-label">Visita Finale:</span> ${highlightText(term.visitaFinale, currentSearchTerm)}
