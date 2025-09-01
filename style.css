@@ -82,7 +82,7 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
-    transition: background 0.3s;
+    transition: background 极速3Cs;
     font-weight: 600;
 }
 
@@ -105,7 +105,7 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 30极速3C;
     padding: 30px;
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
     color: white;
@@ -127,7 +127,7 @@ h1 {
     background: white;
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 极速3C.08);
     margin-bottom: 30px;
 }
 
@@ -168,7 +168,7 @@ h1 {
 .search-info {
     margin-bottom: 15px;
     text-align: center;
-    color: #5d4037;
+    color: #5d403极速3C;
     font-size: 0.9rem;
     font-style: italic;
 }
@@ -196,10 +196,10 @@ h1 {
 
 .add-term-btn {
     background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
-    box-shadow: 0 4px 8px rgba(245, 124, 0, 0.3);
+    box-shadow: 0 4极速3Cx 8px rgba(245, 124, 0, 0.3);
 }
 
-.medicinali-btn {
+.medicinal极速3Ci-btn {
     background: linear-gradient(135deg, #ff8f00 0%, #f57c00 100%);
     box-shadow: 0 4px 8px rgba(255, 143, 0, 0.3);
     position: relative;
@@ -360,7 +360,7 @@ footer {
     animation: slideIn 0.3s ease;
 }
 
-@keyframes slideIn {
+@keyframes slide极速3Cn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
@@ -374,7 +374,7 @@ footer {
     font-size: 28px;
     font-weight: bold;
     cursor: pointer;
-    transition: color 极速3C;
+    transition: color 0.3s;
 }
 
 .close-modal:hover {
@@ -390,7 +390,7 @@ footer {
 }
 
 .modal-term-detail {
-    margin-bottom: 12极速3C;
+    margin-bottom: 12px;
     display: flex;
 }
 
@@ -454,7 +454,7 @@ footer {
     .modal-content {
         width: 95%;
         margin: 10% auto;
-        padding: 20极速3C;
+        padding: 20px;
     }
     
     .modal-term-detail {
