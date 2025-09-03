@@ -2397,7 +2397,7 @@ const dizionarioSanitario = [
         tipologia: "Termine sanitario",
         termine: "Ortodonzia contenzione",
         categoria: "Ortodonzia ",
-        rimborso: "20% ; > 2 Anni ; > 4 Anni 1° iscrizione 10% ; < 2 Anni ; < 4 Anni 1° iscrizione",
+        rimborso: "25% ; > 2 Anni ; > 4 Anni 1° iscrizione 10% ; < 2 Anni ; < 4 Anni 1° iscrizione",
         maxSpec: "maxgrup",
         maxGrup: "3000euro",
         Prevpres: "Si",
