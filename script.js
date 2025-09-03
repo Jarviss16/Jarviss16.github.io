@@ -2526,7 +2526,7 @@ const dizionarioSanitario = [
         visitaFinale: "No",
         valutazioneSanitaria: "No",
         sinonimi: " "
-    }
+    },
    {
         cod: "13APP",
         tipologia: "Termine sanitario",
@@ -2541,7 +2541,7 @@ const dizionarioSanitario = [
         visitaFinale: "No",
         valutazioneSanitaria: "No",
         sinonimi: " "
-    }
+    },
    {
         cod: "13APP",
         tipologia: "Termine sanitario",
@@ -2556,7 +2556,7 @@ const dizionarioSanitario = [
         visitaFinale: "No",
         valutazioneSanitaria: "No",
         sinonimi: " "
-    }
+    },
    {
         cod: "13APP",
         tipologia: "Termine sanitario",
